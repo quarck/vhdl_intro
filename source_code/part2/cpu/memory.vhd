@@ -1,13 +1,16 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.std_logic_unsigned.all ;
+use ieee.std_logic_arith.all;
+
+use work.opcodes.all;
 
 entity memory is
 	port
 	(
 		address_bus	: in integer range 0 to 255;
-		data_in		: in integer range 0 to 255;
-		data_out		: out integer range 0 to 255;
+		data_in		: in std_logic_vector(7 downto 0);
+		data_out	: out std_logic_vector(7 downto 0);
 		mem_write	: in std_logic;
 		rst			: in std_logic
 	);
@@ -15,69 +18,46 @@ end memory;
 
 architecture rtl of memory is
 
-	constant nop : integer := 0;
-	constant sta : integer := 16;
-	constant lda : integer := 32;
-	constant add : integer := 48;
-	constant ior : integer := 64;
-	constant iand: integer := 80;
-	constant inot: integer := 96;
-	constant sub : integer := 112;
-	constant jmp : integer := 128;
-	constant jn  : integer := 144;
-	constant jp  : integer := 148;
-	constant jv  : integer := 152;
-	constant jnv : integer := 156;
-	constant jz  : integer := 160;
-	constant jnz : integer := 164;
-	constant jc  : integer := 176;
-	constant jnc : integer := 180;
-	constant jb  : integer := 184;
-	constant jnb : integer := 188;
-	constant shr : integer := 224;
-	constant shl : integer := 225;
-	constant iror: integer := 226;
-	constant irol: integer := 227;
-	constant hlt : integer := 240;
 
-type data is array (0 to 255) of integer;
+type data is array (0 to 255) of std_logic_vector(7 downto 0);
 
 begin
 	process (mem_write,rst)
 		variable data_array: data;
 	begin
 		if (rst='1') then
-			data_array(0) := lda;
-			data_array(1) := 130;	
-			data_array(2) := sub;
-			data_array(3) := 132;
-			data_array(4) := jz;	
-			data_array(5) := 8;
-			data_array(6) := jmp;
-			data_array(7) := 2;
-			data_array(8) := lda;
-			data_array(9) := 130;
-			data_array(10) := add;
-			data_array(11) := 131;
-			data_array(12) := sta;
-			data_array(13) := 128;
-			data_array(14) := lda;	
-			data_array(15) := 129;
-			data_array(16) := shl;
-			data_array(17) := shl;
-			data_array(18) := shl;
-			data_array(19) := shl;
-			data_array(20) := ior;
-			data_array(21) := 128;
-			data_array(22) := sta;
-			data_array(23) := 133;
-			data_array(24) := hlt;
+			data_array(0) := OP_LDA;
+			data_array(1) := conv_std_logic_vector(130, 8);	
+			data_array(2) := OP_SUB;
+			data_array(3) := conv_std_logic_vector(132, 8);	
+			data_array(4) := OP_JZ;	
+			data_array(5) := conv_std_logic_vector(8, 8);	
+			data_array(6) := OP_JMP;
+			data_array(7) := conv_std_logic_vector(2, 8);	
+			data_array(8) := OP_LDA;
+			data_array(9) := conv_std_logic_vector(130, 8);	
+			data_array(10) := OP_ADD;
+			data_array(11) := conv_std_logic_vector(131, 8);	
+			data_array(12) := OP_STA;
+			data_array(13) := conv_std_logic_vector(128, 8);	
+			data_array(14) := OP_LDA;	
+			data_array(15) := conv_std_logic_vector(129, 8);	
+			data_array(16) := OP_SHL;
+			data_array(17) := OP_SHL;
+			data_array(18) := OP_SHL;
+			data_array(19) := OP_SHL;
+			data_array(20) := OP_IOR;
+			data_array(21) := conv_std_logic_vector(128, 8);	
+			data_array(22) := OP_STA;
+			data_array(23) := conv_std_logic_vector(133, 8);	
+			data_array(24) := OP_HLT;
 			
-			data_array(128) := 0;
-			data_array(129) := 5;
-			data_array(130) := 10;
-			data_array(131) := 18;
-			data_array(132) := 1;
+			data_array(128) := conv_std_logic_vector(0, 8);	
+			data_array(129) := conv_std_logic_vector(5, 8);	
+			data_array(130) := conv_std_logic_vector(10, 8);	
+			data_array(131) := conv_std_logic_vector(18, 8);	
+			data_array(132) := conv_std_logic_vector(1, 8);	
+
 		elsif (rising_edge(mem_write)) then
 			data_array(address_bus) := data_in;			
 		end if;
