@@ -46,7 +46,7 @@ begin
 			data_array(17) := OP_SHL;
 			data_array(18) := OP_SHL;
 			data_array(19) := OP_SHL;
-			data_array(20) := OP_IOR;
+			data_array(20) := OP_OR;
 			data_array(21) := conv_std_logic_vector(128, 8);	
 			data_array(22) := OP_STA;
 			data_array(23) := conv_std_logic_vector(133, 8);	
