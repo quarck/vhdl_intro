@@ -120,15 +120,15 @@ begin
 							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_LDA_1;
 						
-						when OP_LCD => 
+						when OP_LDC => 
 							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_LDC_1;
 						
 						when OP_LDCARRY => 
 							-- very short instruction - we already have all the 
 							-- data by now, store the carry into A and move on							
-							accumulator <= "0000000" & alu_flags.carry_out
-							cpu_state <= FETCH
+							accumulator <= "0000000" & alu_flags.carry_out;
+							cpu_state <= FETCH;
 							
 						when OP_ADD =>						
 							program_counter <= program_counter + 1;
