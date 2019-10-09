@@ -30,15 +30,17 @@ package opcodes is
 	constant OP_STA 		: std_logic_vector(7 downto 0):="01100000";
 	constant OP_LDA 		: std_logic_vector(7 downto 0):="01101000";
 	constant OP_LDC 		: std_logic_vector(7 downto 0):="01110000";
-	constant OP_LDCARRY 	: std_logic_vector(7 downto 0):="01111000";
 	
 	-- math instructions 
 	-- prefix 010
 	constant OP_ADD 		: std_logic_vector(7 downto 0):="01000000";
+	constant OP_ADDC 		: std_logic_vector(7 downto 0):="01000100";
 	constant OP_SUB 		: std_logic_vector(7 downto 0):="01001000";
+	constant OP_SUBC 		: std_logic_vector(7 downto 0):="01001100";
 	constant OP_SUBR 		: std_logic_vector(7 downto 0):="01010000";
+	constant OP_SUBCR 		: std_logic_vector(7 downto 0):="01010100";
 	constant OP_NEG 		: std_logic_vector(7 downto 0):="01011000";
-
+	
 	-- logical and bit instructions 
 	-- prefix 11
 	constant OP_OR  		: std_logic_vector(7 downto 0):="11000000";

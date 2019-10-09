@@ -9,11 +9,11 @@ entity ALU is
 	port
 	(
 		operation			: in alu_opcode_type;
-		left_arg				: in std_logic_vector(7 downto 0);
+		left_arg			: in std_logic_vector(7 downto 0);
 		right_arg			: in std_logic_vector(7 downto 0);
-		carry_in				: in std_logic;
+		carry_in			: in std_logic;
 		result				: out std_logic_vector(7 downto 0);
-		flags					: out ALU_flags
+		flags				: out ALU_flags
 	);
 end ALU;
 
@@ -28,7 +28,7 @@ begin
 
 		case operation is
 			when ALU_ADD =>
-				temp := ('0' & left_arg) + ('0' & right_arg);
+				temp := ('0' & left_arg) + ('0' & right_arg) + ("00000000" & carry_in);
 				
 				if left_arg(7)=right_arg(7) then 
 					flags.overflow <= (left_arg(7) xor temp(7));
@@ -37,7 +37,7 @@ begin
 				end if;
 				
 			when ALU_SUB =>
-				temp := ('0'&left_arg) - ('0'&right_arg);
+				temp := ('0'&left_arg) - ('0'&right_arg) - ("00000000" & carry_in);
 				
 				if left_arg(7) /= right_arg(7) then 
 					flags.overflow <= (left_arg(7) xor temp(7));
@@ -55,10 +55,8 @@ begin
 				end if;
 
 			when ALU_NEG =>
-				temp :=  0 - ('0'&left_arg);				
-				
-						
-				
+				temp :=  0 - ('0'&left_arg);
+
 			when ALU_OR =>
 				temp := ('0' & left_arg) or ('0' & right_arg);
 				
