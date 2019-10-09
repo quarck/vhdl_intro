@@ -111,7 +111,7 @@ stim_proc:
 		
 		-- CPU is executing the very first instruction, setting address bus to '0'
 		-- feed the opcode back into it 		
-		assert address_bus = 0 report "Address bus is not 0: " & Integer'image(address_bus);		
+		assert address_bus = "00000000" report "Address bus is not 0: " ;-- & Integer'image(address_bus);		
 		-- give it NOP at address 0
 		data_in <= OP_NOP;
 		
@@ -119,7 +119,7 @@ stim_proc:
 		wait for clk_period;
 		
 		-- not CPU is in 'decode' state, it must be fetching the next byte automatically
-		assert address_bus = 1 report "Address bus is not 0: " & Integer'image(address_bus);
+		assert address_bus = "00000001" report "Address bus is not 0: "; --  & Integer'image(address_bus);
 		-- give it another NOP at address 1
 		data_in <= OP_NOP;
 
@@ -127,7 +127,7 @@ stim_proc:
 		wait for clk_period;
 
 		-- not CPU is in 'decode' state, it must be fetching the next byte automatically
-		assert address_bus = 2 report "Address bus is not 0: " & Integer'image(address_bus);
+		assert address_bus = "00000010" report "Address bus is not 0: "; -- & Integer'image(address_bus);
 		
 		-- give it a JUMP
 		data_in <= OP_JMP;
@@ -135,7 +135,7 @@ stim_proc:
 		-- wait for the next clock cycle 
 		wait for clk_period;
 		
-		assert address_bus = 4 report "Address bus is not 0: " & Integer'image(address_bus);
+		assert address_bus = "00000011" report "Address bus is not 0: ";-- & Integer'image(address_bus);
 		
 		-- jump dst
 		data_in <= "00000000";
@@ -143,7 +143,7 @@ stim_proc:
 		-- wait for the next clock cycle 
 		wait for clk_period;
 
-		assert address_bus = 0 report "Address bus is not 0: " & Integer'image(address_bus);
+		assert address_bus = "00000000" report "Address bus is not 0: ";--  & Integer'image(address_bus);
 		
 		wait;
    end process;

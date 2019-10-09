@@ -66,7 +66,7 @@ architecture structural of cpu is
 	component memory is
 		port
 		(
-			address_bus	: in integer range 0 to 255;
+			address_bus	: std_logic_vector(7 downto 0);
 			data_in		: in std_logic_vector(7 downto 0);
 			data_out	: out std_logic_vector(7 downto 0);
 			mem_write	: in std_logic;
@@ -133,10 +133,10 @@ begin
 		write_enable		=> pio_write_enable,
 		read_enable			=> pio_read_enable,
 		io_ready			=> pio_io_ready,
-		gpio_a				=> pio_gpio_a,
-		gpio_b				=> pio_gpio_b,
-		gpio_c				=> pio_gpio_c,
-		gpio_d				=> pio_gpio_d
+		gpio_a				=> gpio_a,
+		gpio_b				=> gpio_b,
+		gpio_c				=> gpio_c,
+		gpio_d				=> gpio_d
 	);
 	
 	a: ALU port map (

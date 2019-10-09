@@ -1,14 +1,14 @@
 library ieee ;
-use ieee.std_logic_1164.all ;
-use ieee.std_logic_unsigned.all ;
-use ieee.std_logic_arith.all;
+use ieee.std_logic_1164.all;
 
+use ieee.numeric_std.all; 
+ 
 use work.opcodes.all;
 
 entity memory is
 	port
 	(
-		address_bus	: in integer range 0 to 255;
+		address_bus	: std_logic_vector(7 downto 0);
 		data_in		: in std_logic_vector(7 downto 0);
 		data_out	: out std_logic_vector(7 downto 0);
 		mem_write	: in std_logic;
@@ -99,8 +99,8 @@ begin
 			data_array(69) :=	conv_std_logic_vector(16#10#, 8);	
 
 		elsif (rising_edge(mem_write)) then
-			data_array(address_bus) := data_in;			
+			data_array(to_integer(unsigned(address_bus))) := data_in;			
 		end if;
-		data_out <= data_array(address_bus);
+		data_out <= data_array(to_integer(unsigned(address_bus)));
 	end process;
 end rtl;

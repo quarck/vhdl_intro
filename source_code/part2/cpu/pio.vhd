@@ -9,7 +9,7 @@ entity pio is
 		data_r		: out std_logic_vector(7 downto 0);
 		write_enable	: in std_logic;
 		read_enable		: in std_logic;
-		io_ready		: out std_logic;
+		io_ready			: out std_logic;
 		gpio_a			: in std_logic_vector (7 downto 0);
 		gpio_b			: in std_logic_vector (7 downto 0);
 		gpio_c			: out std_logic_vector (7 downto 0);
@@ -22,7 +22,7 @@ begin
 	process (clk, write_enable, read_enable)
 	begin
 		if rising_edge(clk) then
-			io_readdy  <= '1';
+			io_ready  <= '1';
 			data_r <= "00001111"; -- we don't have a proper IO yet
 		end if;
 	end process;
