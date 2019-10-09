@@ -1,6 +1,5 @@
 -- Ahmes VHDL
 
-
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.std_logic_unsigned.all ;
@@ -21,13 +20,18 @@ entity core is
 		mem_write		: out std_logic;
 
 		alu_opcode 		: out alu_opcode_type;
-
-		carry_in		: out std_logic;
-		
+		alu_carry_in	: out std_logic;		
 		alu_left		: out std_logic_vector(7 downto 0);
 		alu_right		: out std_logic_vector(7 downto 0);
 		alu_result		: in std_logic_vector(7 downto 0);
-		alu_flags		: in ALU_flags
+		alu_flags		: in ALU_flags, 
+		
+		pio_address 	: out std_logic_vector(7 downto 0);
+		pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
+		pio_data_r		: in std_logic_vector(7 downto 0);
+		pio_write_enable	: out std_logic;
+		pio_read_enable		: out std_logic;
+		pio_io_ready		: in std_logic
 	);
 end core;
 
@@ -126,32 +130,32 @@ begin
 
 						when OP_ADD =>
 							program_counter <= program_counter + 1;
-							carry_in <= '0';
+							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ADD_1;
 
 						when OP_ADDC =>
 							program_counter <= program_counter + 1;
-							carry_in <= alu_flags.carry_out;
+							alu_carry_in <= alu_flags.carry_out;
 							cpu_state <= EXECUTE_ADD_1;
 
 						when OP_SUB =>
 							program_counter <= program_counter + 1;
-							carry_in <= '0';
+							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_SUB_1;
 
 						when OP_SUBC =>
 							program_counter <= program_counter + 1;
-							carry_in <= alu_flags.carry_out;
+							alu_carry_in <= alu_flags.carry_out;
 							cpu_state <= EXECUTE_SUB_1;
 
 						when OP_SUBR =>
 							program_counter <= program_counter + 1;
-							carry_in <= '0';
+							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_SUBR_1;
 
 						when OP_SUBCR =>
 							program_counter <= program_counter + 1;
-							carry_in <= alu_flags.carry_out;
+							alu_carry_in <= alu_flags.carry_out;
 							cpu_state <= EXECUTE_SUBR_1;
 
 						when OP_NEG =>
@@ -274,13 +278,13 @@ begin
 
 						when OP_SHCR =>
 							alu_left <= accumulator;
-							carry_in <= alu_flags.carry_out;
+							alu_carry_in <= alu_flags.carry_out;
 							alu_opcode <= ALU_SHCR;
 							cpu_state <= STORE;
 
 						when OP_SHCL =>
 							alu_left <= accumulator;
-							carry_in <= alu_flags.carry_out;
+							alu_carry_in <= alu_flags.carry_out;
 							alu_opcode <= ALU_SHCL;
 							cpu_state <= STORE;
 
