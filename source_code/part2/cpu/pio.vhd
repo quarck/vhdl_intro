@@ -25,5 +25,5 @@ begin
 			io_readdy  <= '1';
 			data_r <= "00001111"; -- we don't have a proper IO yet
 		end if;
-	end;
+	end process;
 end beh;
