@@ -15,7 +15,7 @@ entity cpu is
 		gpio_c			: out std_logic_vector (7 downto 0);
 		gpio_d			: out std_logic_vector (7 downto 0)
 	);
-end core;
+end cpu;
 
 architecture structural of cpu is 
 
@@ -36,7 +36,7 @@ architecture structural of cpu is
 			alu_left		: out std_logic_vector(7 downto 0);
 			alu_right		: out std_logic_vector(7 downto 0);
 			alu_result		: in std_logic_vector(7 downto 0);
-			alu_flags		: in ALU_flags, 
+			alu_flags		: in ALU_flags;
 			
 			pio_address 	: out std_logic_vector(7 downto 0);
 			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
@@ -153,7 +153,7 @@ begin
 		data_in				=> data_in,
 		data_out			=> data_out,
 		mem_write			=> mem_write,
-		rst					=> reset,
+		rst					=> reset
 	);
 	
 end structural;
