@@ -1,6 +1,7 @@
 library ieee ;
 use ieee.std_logic_1164.all;
-
+use ieee.std_logic_unsigned.all ;
+use ieee.std_logic_arith.all;
 use ieee.numeric_std.all; 
  
 use work.opcodes.all;
@@ -99,8 +100,8 @@ begin
 			data_array(69) :=	conv_std_logic_vector(16#10#, 8);	
 
 		elsif (rising_edge(mem_write)) then
-			data_array(to_integer(unsigned(address_bus))) := data_in;			
+			data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus))) := data_in;			
 		end if;
-		data_out <= data_array(to_integer(unsigned(address_bus)));
+		data_out <= data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus)));
 	end process;
 end rtl;
