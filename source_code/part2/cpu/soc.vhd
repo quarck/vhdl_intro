@@ -114,7 +114,7 @@ architecture structural of soc is
 	signal out_port_5 : std_logic_vector (7 downto 0); -- 7-segment digits 
 	signal out_port_6 : std_logic_vector (7 downto 0); -- 7-segment enable signals 
 	signal out_port_7 : std_logic_vector (7 downto 0); -- pin header 8
-	signal out_port_8 : std_logic_vector (7 downto 0) -- pin header 9
+	signal out_port_8 : std_logic_vector (7 downto 0); -- pin header 9
 	
 begin 
 	c : cpu port map (

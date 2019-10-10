@@ -80,8 +80,8 @@ architecture structural of cpu is
 		port
 		(
 			address_bus	: std_logic_vector(7 downto 0);
-			data_in		: in std_logic_vector(7 downto 0);
-			data_out	: out std_logic_vector(7 downto 0);
+			data_write		: in std_logic_vector(7 downto 0);
+			data_read	: out std_logic_vector(7 downto 0);
 			mem_write	: in std_logic;
 			rst			: in std_logic
 		);
@@ -100,8 +100,8 @@ architecture structural of cpu is
 	end component;
 
 	signal address_bus	: std_logic_vector(7 downto 0);
-	signal data_in		: std_logic_vector(7 downto 0);
-	signal data_out		: std_logic_vector(7 downto 0);
+	signal from_cpu_to_mem	: std_logic_vector(7 downto 0);
+	signal from_mem_to_cpu		: std_logic_vector(7 downto 0);
 	signal mem_write	: std_logic;
 	signal alu_opcode 	: alu_opcode_type;
 	signal alu_carry_in		: std_logic;
@@ -121,8 +121,8 @@ begin
 		reset				=> reset,
 		error				=> error,
 		address_bus			=> address_bus,
-		data_in				=> data_in,
-		data_out			=> data_out,
+		data_in				=> from_mem_to_cpu,
+		data_out			=> from_cpu_to_mem,
 		mem_write			=> mem_write,
 		alu_opcode 			=> alu_opcode,
 		alu_carry_in		=> alu_carry_in,
@@ -170,8 +170,8 @@ begin
 	
 	m: memory port map (
 		address_bus			=> address_bus,
-		data_in				=> data_in,
-		data_out			=> data_out,
+		data_write			=> from_cpu_to_mem,
+		data_read			=> from_mem_to_cpu,
 		mem_write			=> mem_write,
 		rst					=> reset
 	);
