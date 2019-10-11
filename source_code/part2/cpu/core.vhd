@@ -63,6 +63,7 @@ architecture ahmes of core is
 	signal cpu_state 				: cpu_state_type;
 	signal program_counter	 		: std_logic_vector(7 downto 0);
 	signal accumulator	 			: std_logic_vector(7 downto 0);
+	signal flags					: ALU_flags := (others => '0');
 	signal data_register			: std_logic_vector(7 downto 0);
 		
 begin
@@ -77,6 +78,13 @@ begin
 			address_bus <= "00000000";
 			data_out <= "00000000";	
 			alu_opcode <= ALU_NOP;
+			
+			pio_address <= "00000000"; 
+			pio_data_w <= "00000000"; 
+			pio_write_enable <= '0';
+			pio_read_enable	 <= '0';
+			
+			flags <= (others => '0');
 
 		elsif rising_edge(clk) 
 		then
@@ -135,7 +143,7 @@ begin
 
 						when OP_ADDC =>
 							program_counter <= program_counter + 1;
-							alu_carry_in <= alu_flags.carry_out;
+							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ADD_1;
 
 						when OP_SUB =>
@@ -145,7 +153,7 @@ begin
 
 						when OP_SUBC =>
 							program_counter <= program_counter + 1;
-							alu_carry_in <= alu_flags.carry_out;
+							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_SUB_1;
 
 						when OP_SUBR =>
@@ -155,7 +163,7 @@ begin
 
 						when OP_SUBCR =>
 							program_counter <= program_counter + 1;
-							alu_carry_in <= alu_flags.carry_out;
+							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_SUBR_1;
 
 						when OP_NEG =>
@@ -186,7 +194,7 @@ begin
 							cpu_state <= EXECUTE_JMP;
 
 						when OP_JN =>
-							if alu_flags.negative = '1' then
+							if flags.negative = '1' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -197,7 +205,7 @@ begin
 
 
 						when OP_JP =>
-							if alu_flags.negative = '0' then
+							if flags.negative = '0' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -207,7 +215,7 @@ begin
 							end if;
 
 						when OP_JV =>
-							if alu_flags.overflow = '1' then
+							if flags.overflow = '1' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -217,7 +225,7 @@ begin
 							end if;
 
 						when OP_JNV =>
-							if alu_flags.overflow = '0' then
+							if flags.overflow = '0' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -227,7 +235,7 @@ begin
 							end if;
 
 						when OP_JZ =>
-							if alu_flags.zero = '1' then
+							if flags.zero = '1' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -237,7 +245,7 @@ begin
 							end if;
 
 						when OP_JNZ =>
-							if alu_flags.zero = '0' then
+							if flags.zero = '0' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -247,7 +255,7 @@ begin
 							end if;
 
 						when OP_JC =>
-							if alu_flags.carry_out = '1' then
+							if flags.carry_out = '1' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -257,7 +265,7 @@ begin
 							end if;
 
 						when OP_JNC =>
-							if alu_flags.carry_out = '0' then
+							if flags.carry_out = '0' then
 								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
@@ -278,13 +286,13 @@ begin
 
 						when OP_SHCR =>
 							alu_left <= accumulator;
-							alu_carry_in <= alu_flags.carry_out;
+							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_SHCR;
 							cpu_state <= STORE;
 
 						when OP_SHCL =>
 							alu_left <= accumulator;
-							alu_carry_in <= alu_flags.carry_out;
+							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_SHCL;
 							cpu_state <= STORE;
 
@@ -414,6 +422,7 @@ begin
 					-- store the ALU's result into the accumulator and we are 
 					-- good to process the next instruction
 					accumulator <= alu_result;
+					flags <= alu_flags;
 					cpu_state <= FETCH;
 
 			end case;
