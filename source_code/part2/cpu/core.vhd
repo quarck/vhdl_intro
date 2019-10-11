@@ -24,7 +24,7 @@ entity core is
 		alu_left		: out std_logic_vector(7 downto 0);
 		alu_right		: out std_logic_vector(7 downto 0);
 		alu_result		: in std_logic_vector(7 downto 0);
-		alu_flags		: in ALU_flags;
+		alu_flags_in	: in ALU_flags;
 		
 		pio_address 	: out std_logic_vector(7 downto 0);
 		pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
@@ -422,7 +422,7 @@ begin
 					-- store the ALU's result into the accumulator and we are 
 					-- good to process the next instruction
 					accumulator <= alu_result;
-					flags <= alu_flags;
+					flags <= alu_flags_in;
 					cpu_state <= FETCH;
 
 			end case;

@@ -43,7 +43,7 @@ architecture structural of cpu is
 			alu_left		: out std_logic_vector(7 downto 0);
 			alu_right		: out std_logic_vector(7 downto 0);
 			alu_result		: in std_logic_vector(7 downto 0);
-			alu_flags		: in ALU_flags;
+			alu_flags_in	: in ALU_flags;
 			
 			pio_address 	: out std_logic_vector(7 downto 0);
 			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
@@ -89,7 +89,7 @@ begin
 			alu_left			=> alu_left,
 			alu_right			=> alu_right,
 			alu_result			=> alu_result,
-			alu_flags			=> alu_flags,
+			alu_flags_in		=> alu_flags,
 
 			pio_address 		=> pio_address,
 			pio_data_w			=> pio_data_w, 

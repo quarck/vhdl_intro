@@ -9,8 +9,9 @@ use work.opcodes.all;
 entity memory is
 	port
 	(
-		address_bus	: std_logic_vector(7 downto 0);
-		data_write		: in std_logic_vector(7 downto 0);
+		clk			: in std_logic; 
+		address_bus	: in std_logic_vector(7 downto 0);
+		data_write	: in std_logic_vector(7 downto 0);
 		data_read	: out std_logic_vector(7 downto 0);
 		mem_write	: in std_logic;
 		rst			: in std_logic
@@ -23,10 +24,10 @@ architecture rtl of memory is
 type data is array (0 to 255) of std_logic_vector(7 downto 0);
 
 begin
-	process (mem_write, rst, address_bus, data_write)
+	process (rst, mem_write, address_bus, data_write)
 		variable data_array: data;
 	begin
-		if (rst='1') then
+		if rst='1' then
 		
 			data_array( 0) :=	OP_LDC;
 			data_array( 1) :=	conv_std_logic_vector(1, 8);
@@ -99,9 +100,11 @@ begin
 			data_array(68) :=	OP_JMP ;
 			data_array(69) :=	conv_std_logic_vector(16#10#, 8);	
 
-		elsif (rising_edge(mem_write)) then
+		elsif rising_edge(mem_write) then
 			data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus))) := data_write;			
 		end if;
+		
 		data_read <= data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus)));
+		
 	end process;
 end rtl;

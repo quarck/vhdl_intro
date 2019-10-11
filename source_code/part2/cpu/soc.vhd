@@ -106,8 +106,9 @@ architecture structural of soc is
 	component memory is
 		port
 		(
-			address_bus	: std_logic_vector(7 downto 0);
-			data_write		: in std_logic_vector(7 downto 0);
+			clk			: in std_logic; 
+			address_bus	: in std_logic_vector(7 downto 0);
+			data_write	: in std_logic_vector(7 downto 0);
 			data_read	: out std_logic_vector(7 downto 0);
 			mem_write	: in std_logic;
 			rst			: in std_logic
@@ -150,7 +151,7 @@ architecture structural of soc is
 	signal data_from_pio_to_cpu		: std_logic_vector(7 downto 0);
 	signal pio_write_enable	: std_logic;
 	signal pio_read_enable	: std_logic;
-	signal pio_io_ready		: std_logic
+	signal pio_io_ready		: std_logic;
 
 	signal in_port_0 : std_logic_vector (7 downto 0); -- dp switches 
 	signal in_port_1 : std_logic_vector (7 downto 0);	-- push btns
@@ -183,7 +184,7 @@ begin
 	);
 	
 	p: pio port map (
-		clk					=> clk,
+		clk					=> CLK_100MHz,
 		
 		address 			=> pio_address,
 		data_w				=> data_from_cpu_to_pio,
@@ -205,6 +206,7 @@ begin
 	);
 	
 	m: memory port map (
+		clk					=> CLK_100MHz,
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
