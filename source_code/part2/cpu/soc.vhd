@@ -5,7 +5,7 @@ use work.types.all;
 
 entity soc is 
 	port (
-		CLK_12MHz : in std_logic; 
+		CLK_100MHz : in std_logic; 
 		
 		DPSwitch_0 : in std_logic; -- pull up by default 
 		DPSwitch_1 : in std_logic; -- pull up by default 
@@ -166,7 +166,7 @@ architecture structural of soc is
 	
 begin 
 	c : cpu port map (
-			clk				=> CLK_12MHz,
+			clk				=> CLK_100MHz,
 			reset			=> reset,
 			error			=> error,
 
@@ -184,7 +184,7 @@ begin
 	);
 	
 	p: pio port map (
-		clk					=> CLK_12MHz,
+		clk					=> CLK_100MHz,
 		
 		address 			=> pio_address,
 		data_w				=> data_from_cpu_to_pio,
@@ -206,7 +206,7 @@ begin
 	);
 	
 	m: memory port map (
-		clk					=> CLK_12MHz,
+		clk					=> CLK_100MHz,
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
