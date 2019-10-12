@@ -26,7 +26,7 @@ architecture behavior of TB_core is
 			alu_left		: out std_logic_vector(7 downto 0);
 			alu_right		: out std_logic_vector(7 downto 0);
 			alu_result		: in std_logic_vector(7 downto 0);
-			alu_flags		: in ALU_flags;
+			alu_flags_in		: in ALU_flags;
 			
 			pio_address 	: out std_logic_vector(7 downto 0);
 			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
@@ -36,6 +36,29 @@ architecture behavior of TB_core is
 			pio_io_ready		: in std_logic
 		);
 	end component;	
+	
+	component memory
+		port(
+         clk : IN  std_logic;
+         address_bus : IN  std_logic_vector(7 downto 0);
+         data_write : IN  std_logic_vector(7 downto 0);
+         data_read : OUT  std_logic_vector(7 downto 0);
+         mem_write : IN  std_logic;
+         rst : IN  std_logic
+        );
+   end component;
+	
+	component ALU is
+		port
+		(
+			operation			: in alu_opcode_type;
+			left_arg			: in std_logic_vector(7 downto 0);
+			right_arg			: in std_logic_vector(7 downto 0);
+			carry_in			: in std_logic;
+			result				: out std_logic_vector(7 downto 0);
+			flags				: out ALU_flags
+		);
+	end component;
 	
 	--Inputs into the core
 	signal clk			: std_logic;
@@ -75,13 +98,31 @@ begin
 		alu_left	=> alu_left,
 		alu_right	=> alu_right,
 		alu_result	=> alu_result,
-		alu_flags	=> alu_flags,
+		alu_flags_in	=> alu_flags,
 		pio_address      => pio_address,
 		pio_data_w	     => pio_data_w,	    
 		pio_data_r	     => pio_data_r,	    
 		pio_write_enable => pio_write_enable,
 		pio_read_enable	 => pio_read_enable,
 		pio_io_ready	 => pio_io_ready
+	);
+
+	m: memory port map(
+		clk => clk,
+		address_bus => address_bus,
+		data_write => data_out,
+		data_read => data_in,
+		mem_write => mem_write,
+		rst => reset
+	);
+
+	a: ALU port map(
+		operation => alu_opcode,
+		left_arg	 => alu_left,
+		right_arg => alu_right,
+		carry_in	 => alu_carry_in,
+		result	 => alu_result,
+		flags		 => alu_flags
 	);
 
 clock_process: 
@@ -102,48 +143,10 @@ stim_proc:
 		reset <= '0';
 		
 		-- anything that is an input - drive to some known state 
-		alu_result <= "00000000";
-		alu_flags <= ( zero => '1', others => '0'); -- set all flags to zero, except "zero"
 		pio_data_r <= "00000000";		
 		pio_io_ready <= '1';
 		
-		wait for clk_period/4; -- offset our sampling point into the middle of the positive pulse 
-		
-		-- CPU is executing the very first instruction, setting address bus to '0'
-		-- feed the opcode back into it 		
-		assert address_bus = "00000000" report "Address bus is not 0: " ;-- & Integer'image(address_bus);		
-		-- give it NOP at address 0
-		data_in <= OP_NOP;
-		
-		-- wait for the next clock cycle 
-		wait for clk_period;
-		
-		-- not CPU is in 'decode' state, it must be fetching the next byte automatically
-		assert address_bus = "00000001" report "Address bus is not 0: "; --  & Integer'image(address_bus);
-		-- give it another NOP at address 1
-		data_in <= OP_NOP;
-
-		-- wait for the next clock cycle 
-		wait for clk_period;
-
-		-- not CPU is in 'decode' state, it must be fetching the next byte automatically
-		assert address_bus = "00000010" report "Address bus is not 0: "; -- & Integer'image(address_bus);
-		
-		-- give it a JUMP
-		data_in <= OP_JMP;
-		
-		-- wait for the next clock cycle 
-		wait for clk_period;
-		
-		assert address_bus = "00000011" report "Address bus is not 0: ";-- & Integer'image(address_bus);
-		
-		-- jump dst
-		data_in <= "00000000";
-
-		-- wait for the next clock cycle 
-		wait for clk_period;
-
-		assert address_bus = "00000000" report "Address bus is not 0: ";--  & Integer'image(address_bus);
+		wait for clk_period*40; -- offset our sampling point into the middle of the positive pulse 		
 		
 		wait;
    end process;

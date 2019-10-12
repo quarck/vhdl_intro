@@ -1,7 +1,5 @@
 library ieee ;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all ;
-use ieee.std_logic_arith.all;
 use ieee.numeric_std.all; 
  
 use work.opcodes.all;
@@ -20,91 +18,41 @@ end memory;
 
 architecture rtl of memory is
 
+type mem_type is array (0 to 255) of std_logic_vector(7 downto 0);
 
-type data is array (0 to 255) of std_logic_vector(7 downto 0);
+signal mem: mem_type := (
+	b"01110000", b"00000001", -- ldc 1
+	b"01100000", b"10000000", -- sta 128
+	b"01100000", b"10000001", -- sta 129
+
+-- addr 6: (00000110)	
+	b"01101000", b"10000000", -- lda 128
+	b"01000000", b"10000001", -- add 129
+	b"01100000", b"10000010", -- sta 130
+	
+	b"01101000", b"10000001", -- lda 129
+	b"01100000", b"10000000", -- sta 128
+	
+	b"01101000", b"10000010", -- lda 130
+	b"01100000", b"10000001", -- sta 129
+		
+	b"10100000", b"00000110", -- jmp 6 "00000110"
+
+	others => b"00000000"
+);
 
 begin
-	process (rst, mem_write, address_bus, data_write)
-		variable data_array: data;
+	process (clk, rst, mem_write, address_bus, data_write)
 	begin
-		if rst='1' then
-		
-			data_array( 0) :=	OP_LDC;
-			data_array( 1) :=	conv_std_logic_vector(1, 8);
-			data_array( 2) :=	OP_STA;
-			data_array( 3) :=	conv_std_logic_vector(16#80#, 8);	
-			data_array( 4) :=	OP_STA;
-			data_array( 5) :=	conv_std_logic_vector(16#82#, 8);	
-			data_array( 6) :=	OP_LDC;
-			data_array( 7) :=	conv_std_logic_vector(0, 8);	
-			data_array( 8) :=	OP_STA ;
-			data_array( 9) :=	conv_std_logic_vector(16#81#, 8);	
-			data_array(10) :=	OP_STA;
-			data_array(11) :=	conv_std_logic_vector(16#83#, 8);	
-			data_array(12) :=	OP_STA ;
-			data_array(13) :=	conv_std_logic_vector(16#84#, 8);	
-			data_array(14) :=	OP_STA ;
-			data_array(15) :=	conv_std_logic_vector(16#85#, 8);	
-			data_array(16) :=	OP_LDA	;
-			data_array(17) :=	conv_std_logic_vector(16#80#, 8);	
-			data_array(18) :=	OP_ADD	;
-			data_array(19) :=	conv_std_logic_vector(16#82#, 8);	
-			data_array(20) :=	OP_STA	;
-			data_array(21) :=	conv_std_logic_vector(16#84#, 8);	
-			data_array(22) :=	OP_OUT	;
-			data_array(23) :=	conv_std_logic_vector(0, 8);	
-			data_array(24) :=	OP_LDA	;
-			data_array(25) :=	conv_std_logic_vector(16#81#, 8);	
-			data_array(26) :=	OP_ADDC ;
-			data_array(27) :=	conv_std_logic_vector(16#83#, 8);	
-			data_array(28) :=	OP_STA	;
-			data_array(29) :=	conv_std_logic_vector(16#85#, 8);	
-			data_array(30) :=	OP_OUT ;
-			data_array(31) :=	conv_std_logic_vector(1, 8);	
-			data_array(32) :=	OP_LDA 	;
-			data_array(33) :=	conv_std_logic_vector(16#82#, 8);	
-			data_array(34) :=	OP_STA 	;
-			data_array(35) :=	conv_std_logic_vector(16#80#, 8);	
-			data_array(36) :=	OP_LDA	;
-			data_array(37) :=	conv_std_logic_vector(16#83#, 8);	
-			data_array(38) :=	OP_STA 	;
-			data_array(39) :=	conv_std_logic_vector(16#81#, 8);	
-			data_array(40) :=	OP_LDA 	;
-			data_array(41) :=	conv_std_logic_vector(16#84#, 8);	
-			data_array(42) :=	OP_STA	;
-			data_array(43) :=	conv_std_logic_vector(16#82#, 8);	
-			data_array(44) :=	OP_LDA	;
-			data_array(45) :=	conv_std_logic_vector(16#85#, 8);	
-			data_array(46) :=	OP_STA	;
-			data_array(47) :=	conv_std_logic_vector(16#83# , 8);	
-			data_array(48) :=	OP_LDC ;
-			data_array(49) :=	conv_std_logic_vector(255, 8);	
-			data_array(50) :=	OP_STA	;
-			data_array(51) :=	conv_std_logic_vector(16#86#, 8);	
-			data_array(52) :=	OP_STA	;
-			data_array(53) :=	conv_std_logic_vector(16#87#, 8);	
-			data_array(54) :=	OP_LDC ;
-			data_array(55) :=	conv_std_logic_vector(1, 8);	
-			data_array(56) :=	OP_SUB	;
-			data_array(57) :=	conv_std_logic_vector(16#86#, 8);	
-			data_array(58) :=	OP_STA	;
-			data_array(59) :=	conv_std_logic_vector(16#86#, 8);	
-			data_array(60) :=	OP_LDC ;
-			data_array(61) :=	conv_std_logic_vector(0, 8);	
-			data_array(62) :=	OP_SUBC ;
-			data_array(63) :=	conv_std_logic_vector(16#87#, 8);	
-			data_array(64) :=	OP_STA	;
-			data_array(65) :=	conv_std_logic_vector(16#87#, 8);	
-			data_array(66) :=	OP_JNZ ;
-			data_array(67) :=	conv_std_logic_vector(16#36#, 8);	
-			data_array(68) :=	OP_JMP ;
-			data_array(69) :=	conv_std_logic_vector(16#10#, 8);	
 
-		elsif rising_edge(mem_write) then
-			data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus))) := data_write;			
+		if rising_edge(clk) then
+			if mem_write = '1' then 
+				mem(to_integer(unsigned(address_bus))) <= data_write;
+				data_read <= data_write;
+			else 
+				data_read <= mem(to_integer(unsigned(address_bus)));
+			end if;			
 		end if;
-		
-		data_read <= data_array(to_integer(ieee.NUMERIC_STD.unsigned(address_bus)));
 		
 	end process;
 end rtl;

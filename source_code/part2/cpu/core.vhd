@@ -38,20 +38,20 @@ end core;
 architecture ahmes of core is
 
 	type cpu_state_type is (
-		FETCH,
+		FETCH_0, FETCH_1,
 		DECODE,
 		
 		EXECUTE_STA_1, EXECUTE_STA_2,
-		EXECUTE_LDA_1, EXECUTE_LDA_2, 
+		EXECUTE_LDA_1, EXECUTE_LDA_2, EXECUTE_LDA_3, 
 		EXECUTE_LDC_1, 
 		
-		EXECUTE_ADD_1, EXECUTE_ADD_2, 
-		EXECUTE_SUB_1, EXECUTE_SUB_2, 
-		EXECUTE_SUBR_1, EXECUTE_SUBR_2,
+		EXECUTE_ADD_1, EXECUTE_ADD_2, EXECUTE_ADD_3, 
+		EXECUTE_SUB_1, EXECUTE_SUB_2, EXECUTE_SUB_3, 
+		EXECUTE_SUBR_1, EXECUTE_SUBR_2,EXECUTE_SUBR_3,
 		
-		EXECUTE_OR_1, EXECUTE_OR_2, 
-		EXECUTE_AND_1, EXECUTE_AND_2, 
-		EXECUTE_XOR_1, EXECUTE_XOR_2,
+		EXECUTE_OR_1, EXECUTE_OR_2, EXECUTE_OR_3,
+		EXECUTE_AND_1, EXECUTE_AND_2, EXECUTE_AND_3, 
+		EXECUTE_XOR_1, EXECUTE_XOR_2,EXECUTE_XOR_3,
 		
 		EXECUTE_JMP,
 				
@@ -64,7 +64,8 @@ architecture ahmes of core is
 	signal program_counter	 		: std_logic_vector(7 downto 0);
 	signal accumulator	 			: std_logic_vector(7 downto 0);
 	signal flags					: ALU_flags := (others => '0');
-	signal data_register			: std_logic_vector(7 downto 0);
+
+	signal instruction_code			: std_logic_vector(7 downto 0);
 		
 begin
 	process (clk, reset, program_counter, accumulator)		
@@ -72,7 +73,7 @@ begin
 	begin
 		if reset = '1' 
 		then
-			cpu_state <= FETCH;
+			cpu_state <= FETCH_0;
 			program_counter <= "00000000";
 			mem_write <= '0';
 			address_bus <= "00000000";
@@ -85,6 +86,7 @@ begin
 			pio_read_enable	 <= '0';
 			
 			flags <= (others => '0');
+			error <= '0';
 
 		elsif rising_edge(clk) 
 		then
@@ -92,77 +94,58 @@ begin
 				when STOP => 
 					cpu_state <= STOP;
 
-				when FETCH =>
+				when FETCH_0 =>
 					-- set instruction address on the memory bus
 					address_bus <= program_counter;
-
-					-- and in parallel - start incrementing PC to point to 
-					-- the next location 
 					program_counter <= program_counter + 1;
-					error <= '0';
+					cpu_state <= FETCH_1;
+					
+				when FETCH_1 =>
+					-- set instruction address on the memory bus, 
+					-- data from the FETCH_0 is still travelling through FF-s
+					address_bus <= program_counter;
+					program_counter <= program_counter + 1;
+
 					cpu_state <= DECODE;
 
 				when DECODE =>
-					-- As we enter here, program_counter is pointing  to the 
-					-- byte that is following the 1st byte of the instruction.
-					-- Thus, preload the next byte - most instructions would use 
-					-- it, so by the time we move to the next state, data would 
-					-- be already waiting on the BUS
-					address_bus <= program_counter;
-
+					-- instruction code would have just arrive by now in the data IN
+					instruction_code <= data_in;
+				
 					case data_in is
 						when OP_NOP =>
-							-- we already did preload the next byte, just move 
-							-- the PC to point the byte after it, and we are 
-							-- good to skip FETCH and jump directly into DECODE 
-							-- again for the next instruction
-							cpu_state <= DECODE;	
-							program_counter <= program_counter + 1;
+							cpu_state <= FETCH_0;
 
 						when OP_STA =>
-							-- adjust PC to point to the byte after the argument 
-							-- (for the next instruction), and jump to the 
-							-- execution state - we don't have data yet to do 
-							-- anything else, instruction argument is yet to 
-							-- travel from the memory
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_STA_1;
 
 						when OP_LDA =>	
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_LDA_1;
 
 						when OP_LDC => 
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_LDC_1;
 
 						when OP_ADD =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ADD_1;
 
 						when OP_ADDC =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ADD_1;
 
 						when OP_SUB =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_SUB_1;
 
 						when OP_SUBC =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_SUB_1;
 
 						when OP_SUBR =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_SUBR_1;
 
 						when OP_SUBCR =>
-							program_counter <= program_counter + 1;
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_SUBR_1;
 
@@ -172,15 +155,12 @@ begin
 							cpu_state <= STORE;
 
 						when OP_OR =>
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_OR_1;
 
 						when OP_AND =>
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_AND_1;
 
 						when OP_XOR =>
-							program_counter <= program_counter + 1;
 							cpu_state <= EXECUTE_XOR_1;
 
 						when OP_NOT =>
@@ -189,89 +169,63 @@ begin
 							cpu_state <= STORE;
 
 						when OP_JMP =>
-							-- we are jumping - but address to jump is not yet 
-							-- known, thus we move into EXECUTE_JMP state
 							cpu_state <= EXECUTE_JMP;
 
 						when OP_JN =>
 							if flags.negative = '1' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 
 						when OP_JP =>
 							if flags.negative = '0' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JV =>
 							if flags.overflow = '1' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JNV =>
 							if flags.overflow = '0' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JZ =>
 							if flags.zero = '1' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JNZ =>
 							if flags.zero = '0' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JC =>
 							if flags.carry_out = '1' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_JNC =>
 							if flags.carry_out = '0' then
-								-- same as for unconditional jump
 								cpu_state <= EXECUTE_JMP;
 							else
-								-- not jumping -- go to FETCH now
-								program_counter <= program_counter + 1;
-								cpu_state <= FETCH;
+								cpu_state <= FETCH_0;
 							end if;
 
 						when OP_SHR =>
@@ -306,8 +260,6 @@ begin
 					end case;
 
 				when EXECUTE_STA_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address to store data into
 					address_bus <= data_in;
 					data_out <= accumulator;	
 					mem_write <= '1';
@@ -315,61 +267,60 @@ begin
 
 				when EXECUTE_STA_2 =>
 					mem_write <= '0';
-					cpu_state <= FETCH;
+					cpu_state <= FETCH_0;
 
 
 				when EXECUTE_LDA_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address to load data from
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_LDA_2;
 
 				when EXECUTE_LDA_2 =>
+					cpu_state <= EXECUTE_LDA_3;
+
+				when EXECUTE_LDA_3 =>
 					accumulator <= data_in;	
-					cpu_state <= FETCH;
+					cpu_state <= FETCH_0;
 
 
 				when EXECUTE_LDC_1 =>
-					-- data_in is an argument of the instruction 
-					-- - actual value to load into the accumulator
 					accumulator <= data_in;
-					cpu_state <= FETCH;
+					cpu_state <= FETCH_0;
 
 
 				when EXECUTE_ADD_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_ADD_2;
-
+					
 				when EXECUTE_ADD_2 =>
-					-- now data_in is an argument to add 
+					cpu_state <= EXECUTE_ADD_3;
+
+				when EXECUTE_ADD_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					alu_opcode <= ALU_ADD;
 					cpu_state <= STORE;
 
 				when EXECUTE_SUB_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_SUB_2;
 
 				when EXECUTE_SUB_2 =>
-					-- now data_in is an argument to sub
+					cpu_state <= EXECUTE_SUB_3;
+
+				when EXECUTE_SUB_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					alu_opcode <= ALU_SUB;
 					cpu_state <= STORE;
 
 				when EXECUTE_SUBR_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_SUBR_2;
 
 				when EXECUTE_SUBR_2 =>
-					-- now data_in is an argument to sub
+					cpu_state <= EXECUTE_SUBR_3;
+
+				when EXECUTE_SUBR_3 =>
 					alu_left <= data_in;
 					alu_right <= accumulator;
 					alu_opcode <= ALU_SUB;
@@ -377,36 +328,39 @@ begin
 
 
 				when EXECUTE_OR_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_OR_2;
 
 				when EXECUTE_OR_2 =>
+					cpu_state <= EXECUTE_OR_3;
+
+				when EXECUTE_OR_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					alu_opcode <= ALU_OR;
 					cpu_state <= STORE;
 
 				when EXECUTE_XOR_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_XOR_2;
 
 				when EXECUTE_XOR_2 =>
+					cpu_state <= EXECUTE_XOR_3;
+
+				when EXECUTE_XOR_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					alu_opcode <= ALU_XOR;
 					cpu_state <= STORE;
 
 				when EXECUTE_AND_1 =>
-					-- data_in is an argument of the instruction 
-					-- - address of the second argument 
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_AND_2;
 
 				when EXECUTE_AND_2 =>
+					cpu_state <= EXECUTE_AND_3;
+
+				when EXECUTE_AND_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					alu_opcode <= ALU_AND;
@@ -415,15 +369,12 @@ begin
 
 				when EXECUTE_JMP =>
 					program_counter <= data_in;
-					cpu_state <= FETCH;
+					cpu_state <= FETCH_0;
 
 				when STORE =>
-					-- program_counter was already updated by this stage, just 
-					-- store the ALU's result into the accumulator and we are 
-					-- good to process the next instruction
 					accumulator <= alu_result;
 					flags <= alu_flags_in;
-					cpu_state <= FETCH;
+					cpu_state <= FETCH_0;
 
 			end case;
 		end if;

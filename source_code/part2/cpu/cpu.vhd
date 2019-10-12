@@ -10,14 +10,14 @@ entity cpu is
 		reset				: in std_logic;
 		error				: out std_logic;
 	
-		mem_address			: out std_logic_vector(7 downto 0);
-		mem_data_r			: in std_logic_vector(7 downto 0);
-		mem_data_w			: out std_logic_vector(7 downto 0);
+		mem_address			: out unsigned(7 downto 0);
+		mem_data_r			: in unsigned(7 downto 0);
+		mem_data_w			: out unsigned(7 downto 0);
 		mem_write			: out std_logic;
 	
-		pio_address 		: out std_logic_vector(7 downto 0);
-		pio_data_w			: out std_logic_vector(7 downto 0); -- data entering IO port 
-		pio_data_r			: in std_logic_vector(7 downto 0);
+		pio_address 		: out unsigned(7 downto 0);
+		pio_data_w			: out unsigned(7 downto 0); -- data entering IO port 
+		pio_data_r			: in unsigned(7 downto 0);
 		pio_write_enable	: out std_logic;
 		pio_read_enable		: out std_logic;
 		pio_io_ready		: in std_logic
