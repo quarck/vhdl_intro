@@ -27,13 +27,12 @@ architecture behavior of TB_core is
 			alu_right		: out std_logic_vector(7 downto 0);
 			alu_result		: in std_logic_vector(7 downto 0);
 			alu_flags_in		: in ALU_flags;
+
+			debug_program_counter		: out std_logic_vector(7 downto 0);
+			debug_accumulator	 			: out std_logic_vector(7 downto 0);
+			debug_instruction_code		: out std_logic_vector(7 downto 0);
+			debug_cpu_state				: out cpu_state_type
 			
-			pio_address 	: out std_logic_vector(7 downto 0);
-			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
-			pio_data_r		: in std_logic_vector(7 downto 0);
-			pio_write_enable	: out std_logic;
-			pio_read_enable		: out std_logic;
-			pio_io_ready		: in std_logic
 		);
 	end component;	
 	
@@ -74,15 +73,15 @@ architecture behavior of TB_core is
 	signal alu_right	: std_logic_vector(7 downto 0);
 	signal alu_result	: std_logic_vector(7 downto 0);
 	signal alu_flags	: ALU_flags;
-	signal pio_address 	: std_logic_vector(7 downto 0);
-	signal pio_data_w	: std_logic_vector(7 downto 0); -- data entering IO port 
-	signal pio_data_r	: std_logic_vector(7 downto 0);
-	signal pio_write_enable	: std_logic;
-	signal pio_read_enable	: std_logic;
-	signal pio_io_ready		: std_logic;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns; 
+	
+	signal debug_program_counter		: std_logic_vector(7 downto 0);
+	signal debug_accumulator	 		: std_logic_vector(7 downto 0);
+	signal debug_instruction_code		: std_logic_vector(7 downto 0);
+	signal debug_cpu_state				: cpu_state_type;
+
 begin
  	-- Instantiate the Unit(s) Under Test (UUT)
 	c: core port map(
@@ -98,13 +97,12 @@ begin
 		alu_left	=> alu_left,
 		alu_right	=> alu_right,
 		alu_result	=> alu_result,
-		alu_flags_in	=> alu_flags,
-		pio_address      => pio_address,
-		pio_data_w	     => pio_data_w,	    
-		pio_data_r	     => pio_data_r,	    
-		pio_write_enable => pio_write_enable,
-		pio_read_enable	 => pio_read_enable,
-		pio_io_ready	 => pio_io_ready
+		alu_flags_in	=> alu_flags, 
+		
+		debug_program_counter	=> debug_program_counter,
+		debug_accumulator	 	=> debug_accumulator,
+		debug_instruction_code	=> debug_instruction_code,
+		debug_cpu_state => debug_cpu_state
 	);
 
 	m: memory port map(
@@ -140,13 +138,9 @@ stim_proc:
 		reset <= '1';
 		-- hold reset state for 100 ns.
 		wait for 200 ns;	
-		reset <= '0';
+		reset <= '0';		
 		
-		-- anything that is an input - drive to some known state 
-		pio_data_r <= "00000000";		
-		pio_io_ready <= '1';
-		
-		wait for clk_period*40; -- offset our sampling point into the middle of the positive pulse 		
+		wait for clk_period*400; -- offset our sampling point into the middle of the positive pulse 		
 		
 		wait;
    end process;

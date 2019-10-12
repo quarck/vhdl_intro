@@ -13,14 +13,7 @@ entity cpu is
 		mem_address			: out std_logic_vector(7 downto 0);
 		mem_data_r			: in std_logic_vector(7 downto 0);
 		mem_data_w			: out std_logic_vector(7 downto 0);
-		mem_write			: out std_logic;
-	
-		pio_address 		: out std_logic_vector(7 downto 0);
-		pio_data_w			: out std_logic_vector(7 downto 0); -- data entering IO port 
-		pio_data_r			: in std_logic_vector(7 downto 0);
-		pio_write_enable	: out std_logic;
-		pio_read_enable		: out std_logic;
-		pio_io_ready		: in std_logic
+		mem_write			: out std_logic
 	);
 end cpu;
 
@@ -45,12 +38,10 @@ architecture structural of cpu is
 			alu_result		: in std_logic_vector(7 downto 0);
 			alu_flags_in	: in ALU_flags;
 			
-			pio_address 	: out std_logic_vector(7 downto 0);
-			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
-			pio_data_r		: in std_logic_vector(7 downto 0);
-			pio_write_enable	: out std_logic;
-			pio_read_enable		: out std_logic;
-			pio_io_ready		: in std_logic
+			debug_program_counter		: out std_logic_vector(7 downto 0);
+			debug_accumulator	 			: out std_logic_vector(7 downto 0);
+			debug_instruction_code		: out std_logic_vector(7 downto 0);
+			debug_cpu_state				: out cpu_state_type
 		);
 	end component;	
 	
@@ -89,14 +80,12 @@ begin
 			alu_left			=> alu_left,
 			alu_right			=> alu_right,
 			alu_result			=> alu_result,
-			alu_flags_in		=> alu_flags,
-
-			pio_address 		=> pio_address,
-			pio_data_w			=> pio_data_w, 
-			pio_data_r			=> pio_data_r,
-			pio_write_enable	=> pio_write_enable,
-			pio_read_enable		=> pio_read_enable,
-			pio_io_ready		=> pio_io_ready	
+			alu_flags_in		=> alu_flags, 
+			
+			debug_program_counter	=> open,
+			debug_accumulator	 	=> open,
+			debug_instruction_code	=> open,
+			debug_cpu_state => open
 	);
 	
 	a: ALU port map (

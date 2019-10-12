@@ -17,45 +17,18 @@ entity ALU is
 	);
 end ALU;
 
-
 architecture behaviour of ALU is	
 begin
 	process (left_arg, right_arg, operation, carry_in)
 		variable temp : std_logic_vector(8 downto 0);
 	begin
 	
-		flags.overflow <= '0';
-
 		case operation is
 			when ALU_ADD =>
 				temp := ('0' & left_arg) + ('0' & right_arg) + ("00000000" & carry_in);
 				
-				if left_arg(7)=right_arg(7) then 
-					flags.overflow <= (left_arg(7) xor temp(7));
-				else 
-					flags.overflow <= '0';
-				end if;
-				
 			when ALU_SUB =>
 				temp := ('0'&left_arg) - ('0'&right_arg) - ("00000000" & carry_in);
-				
-				if left_arg(7) /= right_arg(7) then 
-					flags.overflow <= (left_arg(7) xor temp(7));
-				else
-					flags.overflow <= '0';
-				end if;
-
-			when ALU_SUBR =>
-				temp :=  ('0'&right_arg) - ('0'&left_arg);
-				
-				if left_arg(7) /= right_arg(7) then 
-					flags.overflow <= (right_arg(7) xor temp(7));
-				else
-					flags.overflow <= '0';
-				end if;
-
-			when ALU_NEG =>
-				temp :=  0 - ('0'&left_arg);
 
 			when ALU_OR =>
 				temp := ('0' & left_arg) or ('0' & right_arg);
@@ -63,24 +36,9 @@ begin
 			when ALU_AND =>
 				temp := ('0' & left_arg) and ('0' & right_arg);
 
-			when ALU_XOR =>
-				temp := ('0' & left_arg) xor ('0' & right_arg);
-				
 			when ALU_NOT =>
 				temp := not ('0' & left_arg);
 			
-			when ALU_SHL => 
-				temp := left_arg(0) & '0' & left_arg(7 downto 1); 
-			
-			when ALU_SHR => 
-				temp := left_arg(7 downto 0) & '0';
-			
-			when ALU_SHCL => 
-				temp := left_arg(0) & carry_in & left_arg(7 downto 1); 
-				
-			when ALU_SHCR => 
-				temp := left_arg(7 downto 0) & carry_in;
-						
 			when others =>
 				temp := "000000000";
 		end case;
@@ -92,7 +50,6 @@ begin
 		end if;		
 		
 		flags.carry_out <= temp(8);
-		flags.negative <= temp(7);
 
 		result <= temp(7 downto 0);
 		

@@ -115,29 +115,6 @@ architecture structural of soc is
 		);
 	end component;
 
-	component pio is 
-		port (
-			clk			: in std_logic;
-			address 	: in std_logic_vector(7 downto 0);
-			data_w		: in std_logic_vector(7 downto 0); -- data entering IO port 
-			data_r		: out std_logic_vector(7 downto 0);
-			write_enable	: in std_logic;
-			read_enable		: in std_logic;
-			io_ready		: out std_logic;
-			
-			in_port_0		: in std_logic_vector (7 downto 0); -- dp switches 
-			in_port_1		: in std_logic_vector (7 downto 0);	-- push btns
-			in_port_2		: in std_logic_vector (7 downto 0); -- pin header 6
-			in_port_3		: in std_logic_vector (7 downto 0); -- pin header 7
-
-			out_port_4			: out std_logic_vector (7 downto 0); -- individual leds
-			out_port_5			: out std_logic_vector (7 downto 0); -- 7-segment digits 
-			out_port_6			: out std_logic_vector (7 downto 0); -- 7-segment enable signals 
-			out_port_7			: out std_logic_vector (7 downto 0); -- pin header 8
-			out_port_8			: out std_logic_vector (7 downto 0) -- pin header 9
-		);
-	end component;
-
 	signal reset 			: std_logic;
 	signal error 			: std_logic;
 
@@ -145,24 +122,6 @@ architecture structural of soc is
 	signal data_from_mem_to_cpu	: std_logic_vector(7 downto 0);
 	signal data_from_cpu_to_mem	: std_logic_vector(7 downto 0);
 	signal mem_write		: std_logic;
-
-	signal pio_address 		: std_logic_vector(7 downto 0);
-	signal data_from_cpu_to_pio		: std_logic_vector(7 downto 0); -- data entering IO port 
-	signal data_from_pio_to_cpu		: std_logic_vector(7 downto 0);
-	signal pio_write_enable	: std_logic;
-	signal pio_read_enable	: std_logic;
-	signal pio_io_ready		: std_logic;
-
-	signal in_port_0 : std_logic_vector (7 downto 0); -- dp switches 
-	signal in_port_1 : std_logic_vector (7 downto 0);	-- push btns
-	signal in_port_2 : std_logic_vector (7 downto 0); -- pin header 6
-	signal in_port_3 : std_logic_vector (7 downto 0); -- pin header 7
-
-	signal out_port_4 : std_logic_vector (7 downto 0); -- individual leds
-	signal out_port_5 : std_logic_vector (7 downto 0); -- 7-segment digits 
-	signal out_port_6 : std_logic_vector (7 downto 0); -- 7-segment enable signals 
-	signal out_port_7 : std_logic_vector (7 downto 0); -- pin header 8
-	signal out_port_8 : std_logic_vector (7 downto 0); -- pin header 9
 	
 begin 
 	c : cpu port map (
@@ -181,28 +140,6 @@ begin
 			pio_write_enable	=> pio_write_enable,
 			pio_read_enable		=> pio_read_enable,
 			pio_io_ready		=> pio_io_ready
-	);
-	
-	p: pio port map (
-		clk					=> CLK_100MHz,
-		
-		address 			=> pio_address,
-		data_w				=> data_from_cpu_to_pio,
-		data_r				=> data_from_pio_to_cpu,
-		write_enable		=> pio_write_enable,
-		read_enable			=> pio_read_enable,
-		io_ready			=> pio_io_ready,
-		
-		in_port_0			=> in_port_0,
-		in_port_1			=> in_port_1,
-		in_port_2			=> in_port_2,
-		in_port_3			=> in_port_3,
-
-		out_port_4			=> out_port_4,
-		out_port_5			=> out_port_5,
-		out_port_6			=> out_port_6, 
-		out_port_7			=> out_port_7,
-		out_port_8			=> out_port_8
 	);
 	
 	m: memory port map (
