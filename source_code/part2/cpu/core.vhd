@@ -170,28 +170,28 @@ begin
 							alu_opcode <= ALU_XOR;
 
 						when OP_SHL =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_opcode <= ALU_SHL;
 
 						when OP_SHR =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_opcode <= ALU_SHR;
 
 						when OP_ROL =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_opcode <= ALU_ROL;
 
 						when OP_ROR =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_opcode <= ALU_ROR;
 
 						when OP_RCL =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCL;
 
 						when OP_RCR =>
-							cpu_state <= EXECUTE_ALU_REGMEM_1;
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCR;
 
@@ -287,6 +287,12 @@ begin
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					cpu_state <= STORE;
+
+				when EXECUTE_ALU_REGCONST_1 =>
+					alu_left <= accumulator;
+					alu_right <= data_in;
+					cpu_state <= STORE;
+
 
 				when EXECUTE_JMP =>
 					program_counter <= data_in;

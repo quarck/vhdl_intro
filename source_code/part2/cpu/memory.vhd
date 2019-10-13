@@ -20,29 +20,43 @@ architecture rtl of memory is
 
 type mem_type is array (0 to 255) of std_logic_vector(7 downto 0);
 
-signal mem: mem_type := (
-	b"01110000", b"00000001", -- ldc 1
-	b"01100000", b"10000000", -- sta 128
-	b"01100000", b"10000001", -- sta 129
+constant c_0  : std_logic_vector(7 downto 0):="00000000";
+constant c_1  : std_logic_vector(7 downto 0):="00000001";
+constant c_2  : std_logic_vector(7 downto 0):="00000010";
+constant c_3  : std_logic_vector(7 downto 0):="00000011";
+constant c_4  : std_logic_vector(7 downto 0):="00000100";
+constant c_5  : std_logic_vector(7 downto 0):="00000101";
+constant c_6  : std_logic_vector(7 downto 0):="00000110";
+constant c_7  : std_logic_vector(7 downto 0):="00000111";
+constant c_8  : std_logic_vector(7 downto 0):="00001000";
 
--- addr 6: (00000110)	
-	b"01101000", b"10000000", -- lda 128
-	b"01000000", b"10000001", -- add 129
-	b"01100000", b"10000010", -- sta 130
+constant c_A  : std_logic_vector(7 downto 0):=b"10000000";
+constant c_B  : std_logic_vector(7 downto 0):=b"10000001";
+constant c_C  : std_logic_vector(7 downto 0):=b"10000010";
+
+signal mem: mem_type := (
+	OP_LDC, c_1,
+	OP_STA, c_A,
+	OP_STA, c_B,
+
+-- addr 6:
+	OP_LDA, c_A,
+	OP_ADD, c_B,
+	OP_STA, c_C,
 	
-	b"01101000", b"10000001", -- lda 129
-	b"01100000", b"10000000", -- sta 128
+	OP_LDA, c_B,
+	OP_STA, c_A,
 	
-	b"01101000", b"10000010", -- lda 130
-	b"01100000", b"10000001", -- sta 129
+	OP_LDA, c_C,
+	OP_STA, c_B,
 	
-	b"10110001", b"00000100", 
-	b"10110001", b"00000101", 
-	b"10110001", b"00000110", 
-	b"10110001", b"00000111", 
-	b"10110001", b"00001000", 
+	OP_OUT, c_4, 
+	OP_OUT, c_5, 
+	OP_OUT, c_6, 
+	OP_OUT, c_7, 
+	OP_OUT, c_8, 
 		
-	b"10100000", b"00000110", -- jmp 6 "00000110"
+	OP_JMP, c_6,
 
 	others => b"00000000"
 );
