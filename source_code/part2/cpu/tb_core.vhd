@@ -222,8 +222,7 @@ stim_proc:
 		
 		-- anything that is an input - drive to some known state 
 		pio_data_r <= "00000000";		
-		pio_io_ready <= '1';
-		
+	
 		wait for clk_period*40; -- offset our sampling point into the middle of the positive pulse 		
 		
 		wait;

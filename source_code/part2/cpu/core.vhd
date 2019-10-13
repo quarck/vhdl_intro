@@ -321,9 +321,6 @@ begin
 					cpu_state <= EXECUTE_PORT_IN_2;
 					
 				when EXECUTE_PORT_IN_2 => 
-					cpu_state <= EXECUTE_PORT_IN_3;
-
-				when EXECUTE_PORT_IN_3 => 
 					if pio_io_ready = '1' then 
 						cpu_state <= FETCH_0;
 						pio_read_enable <= '0';
@@ -337,9 +334,6 @@ begin
 					cpu_state <= EXECUTE_PORT_OUT_2;
 					
 				when EXECUTE_PORT_OUT_2 => 
-					cpu_state <= EXECUTE_PORT_OUT_3;
-					
-				when EXECUTE_PORT_OUT_3 => 
 					if pio_io_ready = '1' then 
 						cpu_state <= FETCH_0;
 						pio_write_enable <= '0';

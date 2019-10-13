@@ -25,59 +25,46 @@ entity pio is
 end pio;
 
 architecture beh of pio is 
-	type io_state_type is (
-			IO_IDLE, 
-			IO_READING, 
-			IO_WRITING
-		);
-		
+	type io_state_type is (IO_IDLE, IO_BUSY);		
 	signal state : io_state_type := IO_IDLE;
-		
 begin	
 	process (clk, data_w, write_enable, read_enable)
 	begin
 		if rising_edge(clk) then
-		
-			io_ready  <= '1';
-		
+				
 			case state is 
 				when IO_IDLE => 
+
 					if write_enable = '1' then 
-						io_ready <= '0';
-						state <= IO_WRITING;
+						case address is 
+							when "00000100" => out_port_4 <= data_w;
+							when "00000101" => out_port_5 <= data_w;
+							when "00000110" => out_port_6 <= data_w;
+							when "00000111" => out_port_7 <= data_w;
+							when "00001000" => out_port_8 <= data_w;
+							when others		=> 
+						end case;
+						
+						state <= IO_BUSY;
+						
 					elsif read_enable = '1' then 
-						io_ready <= '0';
-						state <= IO_READING;
+						case address is 
+							when "00000000" => data_r <= in_port_0;
+							when "00000001" => data_r <= in_port_1;
+							when "00000010" => data_r <= in_port_2;
+							when "00000011" => data_r <= in_port_3;
+							when others		=> data_r <= "00000000";
+						end case;
+						
+						state <= IO_BUSY;
 					end if;
 					
-				when IO_READING => 					
-					case address is 
-						when "00000000" => data_r <= in_port_0;
-						when "00000001" => data_r <= in_port_1;
-						when "00000010" => data_r <= in_port_2;
-						when "00000011" => data_r <= in_port_3;
-						when others		=> data_r <= "00000000";
-					end case;
-					io_ready <= '1';
-					state <= IO_IDLE;
-					
-					
-				when IO_WRITING => 
-					case address is 
-						when "00000100" => out_port_4 <= data_w;
-						when "00000101" => out_port_5 <= data_w;
-						when "00000110" => out_port_6 <= data_w;
-						when "00000111" => out_port_7 <= data_w;
-						when "00001000" => out_port_8 <= data_w;
-						when others		=> 
-					end case;
-					io_ready <= '1';
-					state <= IO_IDLE;
 				when others => 
-					io_ready <= '1';
 					state <= IO_IDLE;
-			end case;
-			
+			end case;			
 		end if;
 	end process;
+	
+	io_ready <= '1' when state = IO_IDLE else '0';
+	
 end beh;
