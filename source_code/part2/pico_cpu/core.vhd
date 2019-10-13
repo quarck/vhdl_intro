@@ -1,4 +1,4 @@
--- Ahmes VHDL
+-- FibPU Core 
 
 library ieee ;
 use ieee.std_logic_1164.all ;
@@ -27,7 +27,7 @@ entity core is
 		alu_flags_in	: in ALU_flags;
 		
 		debug_program_counter		: out std_logic_vector(7 downto 0);
-		debug_accumulator	 			: out std_logic_vector(7 downto 0);
+		debug_accumulator	 		: out std_logic_vector(7 downto 0);
 		debug_instruction_code		: out std_logic_vector(7 downto 0); 
 		debug_cpu_state				: out cpu_state_type
 	);

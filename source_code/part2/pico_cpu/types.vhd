@@ -1,3 +1,5 @@
+-- FibPU
+
 library ieee ;
 use ieee.std_logic_1164.all ;
 
@@ -13,6 +15,7 @@ package types is
 		
 		FETCH_0, 
 		FETCH_1,
+
 		DECODE,
 		
 		EXECUTE_STA_1, 
@@ -30,7 +33,8 @@ package types is
 		
 		EXECUTE_JMP,
 				
-		STORE, 		
+		STORE, 
+		
 		STOP
 		);	
 	

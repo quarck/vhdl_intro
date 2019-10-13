@@ -1,3 +1,5 @@
+-- FibPU
+
 library ieee ;
 use ieee.std_logic_1164.all;
 use work.opcodes.all;
@@ -37,11 +39,14 @@ architecture structural of cpu is
 			alu_right		: out std_logic_vector(7 downto 0);
 			alu_result		: in std_logic_vector(7 downto 0);
 			alu_flags_in	: in ALU_flags;
-			
+							
 			debug_program_counter		: out std_logic_vector(7 downto 0);
-			debug_accumulator	 			: out std_logic_vector(7 downto 0);
-			debug_instruction_code		: out std_logic_vector(7 downto 0);
-			debug_cpu_state				: out cpu_state_type
+			debug_accumulator	 		: out std_logic_vector(7 downto 0);
+			debug_instruction_code		: out std_logic_vector(7 downto 0); 
+			debug_cpu_state				: out cpu_state_type;
+
+			debug_clk_counter			: out integer;
+			debug_inst_counter			: out integer			
 		);
 	end component;	
 	
@@ -82,10 +87,12 @@ begin
 			alu_result			=> alu_result,
 			alu_flags_in		=> alu_flags, 
 			
-			debug_program_counter	=> open,
-			debug_accumulator	 	=> open,
-			debug_instruction_code	=> open,
-			debug_cpu_state => open
+			debug_program_counter	=> open, -- these
+			debug_accumulator	 	=> open, -- ports
+			debug_instruction_code	=> open, -- are 
+			debug_cpu_state			=> open, -- only 
+			debug_clk_counter		=> open, -- for 
+			debug_inst_counter		=> open  -- simulation
 	);
 	
 	a: ALU port map (
