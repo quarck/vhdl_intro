@@ -40,8 +40,8 @@ architecture behavior of TB_core is
 			debug_instruction_code		: out std_logic_vector(7 downto 0); 
 			debug_cpu_state				: out cpu_state_type;
 
-			debug_clk_counter			: out integer;
-			debug_inst_counter			: out integer	
+			debug_clk_counter			: out std_logic_vector(31 downto 0);
+			debug_inst_counter			: out std_logic_vector(31 downto 0)	
 		);
 	end component;	
 	
@@ -68,6 +68,29 @@ architecture behavior of TB_core is
 		);
 	end component;
 	
+	component pio is 
+		port (
+			clk			: in std_logic;
+			address 	: in std_logic_vector(7 downto 0);
+			data_w		: in std_logic_vector(7 downto 0); -- data entering IO port 
+			data_r		: out std_logic_vector(7 downto 0);
+			write_enable	: in std_logic;
+			read_enable		: in std_logic;
+			io_ready		: out std_logic;
+			
+			in_port_0		: in std_logic_vector (7 downto 0); -- dp switches 
+			in_port_1		: in std_logic_vector (7 downto 0);	-- push btns
+			in_port_2		: in std_logic_vector (7 downto 0); -- pin header 6
+			in_port_3		: in std_logic_vector (7 downto 0); -- pin header 7
+
+			out_port_4			: out std_logic_vector (7 downto 0); -- individual leds
+			out_port_5			: out std_logic_vector (7 downto 0); -- 7-segment digits 
+			out_port_6			: out std_logic_vector (7 downto 0); -- 7-segment enable signals 
+			out_port_7			: out std_logic_vector (7 downto 0); -- pin header 8
+			out_port_8			: out std_logic_vector (7 downto 0) -- pin header 9
+		);
+	end component;	
+	
 	--Inputs into the core
 	signal clk			: std_logic;
 	signal reset		: std_logic;
@@ -89,12 +112,24 @@ architecture behavior of TB_core is
 	signal pio_read_enable	: std_logic;
 	signal pio_io_ready		: std_logic;
 
+	signal pio_in_port_0		: std_logic_vector (7 downto 0) := (others => '0'); -- dp switches 
+	signal pio_in_port_1		: std_logic_vector (7 downto 0) := (others => '0');	-- push btns
+	signal pio_in_port_2		: std_logic_vector (7 downto 0) := (others => '0'); -- pin header 6
+	signal pio_in_port_3		: std_logic_vector (7 downto 0) := (others => '0'); -- pin header 7
+	
+	signal pio_out_port_4		: std_logic_vector (7 downto 0); -- individual leds
+	signal pio_out_port_5		: std_logic_vector (7 downto 0); -- 7-segment digits 
+	signal pio_out_port_6		: std_logic_vector (7 downto 0); -- 7-segment enable signals 
+	signal pio_out_port_7		: std_logic_vector (7 downto 0); -- pin header 8
+	signal pio_out_port_8		: std_logic_vector (7 downto 0); -- pin header 9
+
+
 	signal debug_program_counter		: std_logic_vector(7 downto 0);
 	signal debug_accumulator	 		: std_logic_vector(7 downto 0);
 	signal debug_instruction_code		: std_logic_vector(7 downto 0); 
 	signal debug_cpu_state				: cpu_state_type;
-	signal debug_clk_counter			: integer;
-	signal debug_inst_counter			: integer;
+	signal debug_clk_counter			: std_logic_vector(31 downto 0);
+	signal debug_inst_counter			: std_logic_vector(31 downto 0);
 
 
    -- Clock period definitions
@@ -145,6 +180,27 @@ begin
 		carry_in	 => alu_carry_in,
 		result	 => alu_result,
 		flags		 => alu_flags
+	);
+
+	p: pio port map (
+			clk => clk,
+			address 	=> pio_address,
+			data_w		=> pio_data_w,
+			data_r		=> pio_data_r,
+			write_enable	=> pio_write_enable, 
+			read_enable		=> pio_read_enable,
+			io_ready		=> pio_io_ready,
+			
+			in_port_0		=> pio_in_port_0,
+			in_port_1		=> pio_in_port_1,
+			in_port_2		=> pio_in_port_2,
+			in_port_3		=> pio_in_port_3,
+
+			out_port_4		=> pio_out_port_4,
+			out_port_5		=> pio_out_port_5,
+			out_port_6		=> pio_out_port_6,
+			out_port_7		=> pio_out_port_7,
+			out_port_8		=> pio_out_port_8
 	);
 
 clock_process: 

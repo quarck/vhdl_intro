@@ -57,8 +57,8 @@ architecture structural of cpu is
 			debug_instruction_code		: out std_logic_vector(7 downto 0); 
 			debug_cpu_state				: out cpu_state_type;
 
-			debug_clk_counter			: out integer;
-			debug_inst_counter			: out integer			
+			debug_clk_counter			: out std_logic_vector(31 downto 0);
+			debug_inst_counter			: out std_logic_vector(31 downto 0)			
 		);
 	end component;	
 	

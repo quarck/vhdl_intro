@@ -38,8 +38,8 @@ entity core is
 		debug_instruction_code		: out std_logic_vector(7 downto 0); 
 		debug_cpu_state				: out cpu_state_type;
 
-		debug_clk_counter			: out integer;
-		debug_inst_counter			: out integer
+		debug_clk_counter			: out std_logic_vector(31 downto 0);
+		debug_inst_counter			: out std_logic_vector(31 downto 0)
 		
 	);
 end core;
@@ -52,8 +52,8 @@ architecture ahmes of core is
 	signal flags					: ALU_flags := (others => '0');
 	signal instruction_code			: std_logic_vector(7 downto 0);
 	
-	signal clk_counter				: integer := 0;
-	signal inst_counter				: integer := 0;
+	signal clk_counter				: std_logic_vector(31 downto 0) := (others => '0');
+	signal inst_counter				: std_logic_vector(31 downto 0) := (others => '0');
 	
 		
 begin
@@ -86,8 +86,8 @@ begin
 			flags <= (others => '0');
 			error <= '0';
 			
-			clk_counter <= 0;
-			inst_counter <= 0;
+			clk_counter <= (others => '0');
+			inst_counter <= (others => '0');
 
 		elsif rising_edge(clk) 
 		then

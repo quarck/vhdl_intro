@@ -34,7 +34,7 @@ architecture beh of pio is
 	signal state : io_state_type := IO_IDLE;
 		
 begin	
-	process (clk, write_enable, read_enable)
+	process (clk, data_w, write_enable, read_enable)
 	begin
 		if rising_edge(clk) then
 		
@@ -71,6 +71,9 @@ begin
 						when "00001000" => out_port_8 <= data_w;
 						when others		=> 
 					end case;
+					io_ready <= '1';
+					state <= IO_IDLE;
+				when others => 
 					io_ready <= '1';
 					state <= IO_IDLE;
 			end case;
