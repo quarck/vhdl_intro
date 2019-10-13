@@ -29,28 +29,36 @@ architecture structural of cpu is
 	component core is
 		port
 		(
-			clk				: in std_logic;
-			reset			: in std_logic;
-			error			: out std_logic;
-			
-			address_bus		: out std_logic_vector(7 downto 0);
-			data_in			: in std_logic_vector(7 downto 0);
-			data_out		: out std_logic_vector(7 downto 0);
-			mem_write		: out std_logic;
-
-			alu_opcode 		: out alu_opcode_type;
-			alu_carry_in	: out std_logic;		
-			alu_left		: out std_logic_vector(7 downto 0);
-			alu_right		: out std_logic_vector(7 downto 0);
-			alu_result		: in std_logic_vector(7 downto 0);
-			alu_flags_in	: in ALU_flags;
-			
-			pio_address 	: out std_logic_vector(7 downto 0);
-			pio_data_w		: out std_logic_vector(7 downto 0); -- data entering IO port 
-			pio_data_r		: in std_logic_vector(7 downto 0);
+			clk					: in std_logic;
+			reset				: in std_logic;
+			error				: out std_logic;
+				
+			address_bus			: out std_logic_vector(7 downto 0);
+			data_in				: in std_logic_vector(7 downto 0);
+			data_out			: out std_logic_vector(7 downto 0);
+			mem_write			: out std_logic;
+	
+			alu_opcode 			: out alu_opcode_type;
+			alu_carry_in		: out std_logic;		
+			alu_left			: out std_logic_vector(7 downto 0);
+			alu_right			: out std_logic_vector(7 downto 0);
+			alu_result			: in std_logic_vector(7 downto 0);
+			alu_flags_in		: in ALU_flags;
+				
+			pio_address 		: out std_logic_vector(7 downto 0);
+			pio_data_w			: out std_logic_vector(7 downto 0); -- data entering IO port 
+			pio_data_r			: in std_logic_vector(7 downto 0);
 			pio_write_enable	: out std_logic;
 			pio_read_enable		: out std_logic;
-			pio_io_ready		: in std_logic
+			pio_io_ready		: in std_logic;
+
+			debug_program_counter		: out std_logic_vector(7 downto 0);
+			debug_accumulator	 		: out std_logic_vector(7 downto 0);
+			debug_instruction_code		: out std_logic_vector(7 downto 0); 
+			debug_cpu_state				: out cpu_state_type;
+
+			debug_clk_counter			: out integer;
+			debug_inst_counter			: out integer			
 		);
 	end component;	
 	
@@ -96,7 +104,14 @@ begin
 			pio_data_r			=> pio_data_r,
 			pio_write_enable	=> pio_write_enable,
 			pio_read_enable		=> pio_read_enable,
-			pio_io_ready		=> pio_io_ready	
+			pio_io_ready		=> pio_io_ready,
+			
+			debug_program_counter	=> open, -- these
+			debug_accumulator	 	=> open, -- ports
+			debug_instruction_code	=> open, -- are 
+			debug_cpu_state			=> open, -- only 
+			debug_clk_counter		=> open, -- for 
+			debug_inst_counter		=> open  -- simulation			
 	);
 	
 	a: ALU port map (

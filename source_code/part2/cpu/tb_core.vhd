@@ -33,7 +33,15 @@ architecture behavior of TB_core is
 			pio_data_r		: in std_logic_vector(7 downto 0);
 			pio_write_enable	: out std_logic;
 			pio_read_enable		: out std_logic;
-			pio_io_ready		: in std_logic
+			pio_io_ready		: in std_logic;
+			
+			debug_program_counter		: out std_logic_vector(7 downto 0);
+			debug_accumulator	 		: out std_logic_vector(7 downto 0);
+			debug_instruction_code		: out std_logic_vector(7 downto 0); 
+			debug_cpu_state				: out cpu_state_type;
+
+			debug_clk_counter			: out integer;
+			debug_inst_counter			: out integer	
 		);
 	end component;	
 	
@@ -81,6 +89,14 @@ architecture behavior of TB_core is
 	signal pio_read_enable	: std_logic;
 	signal pio_io_ready		: std_logic;
 
+	signal debug_program_counter		: std_logic_vector(7 downto 0);
+	signal debug_accumulator	 		: std_logic_vector(7 downto 0);
+	signal debug_instruction_code		: std_logic_vector(7 downto 0); 
+	signal debug_cpu_state				: cpu_state_type;
+	signal debug_clk_counter			: integer;
+	signal debug_inst_counter			: integer;
+
+
    -- Clock period definitions
    constant clk_period : time := 10 ns; 
 begin
@@ -104,7 +120,13 @@ begin
 		pio_data_r	     => pio_data_r,	    
 		pio_write_enable => pio_write_enable,
 		pio_read_enable	 => pio_read_enable,
-		pio_io_ready	 => pio_io_ready
+		pio_io_ready	 => pio_io_ready, 
+		debug_program_counter	 => debug_program_counter,
+		debug_accumulator	 	 => debug_accumulator,
+		debug_instruction_code	 => debug_instruction_code,
+		debug_cpu_state			 => debug_cpu_state,
+		debug_clk_counter		 => debug_clk_counter,
+		debug_inst_counter		 => debug_inst_counter
 	);
 
 	m: memory port map(
