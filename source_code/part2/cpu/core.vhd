@@ -172,6 +172,10 @@ begin
 						when OP_SHL =>
 							cpu_state <= EXECUTE_ALU_REGCONST_1;
 							alu_opcode <= ALU_SHL;
+							
+						when OP_SHAR => 
+							cpu_state <= EXECUTE_ALU_REGCONST_1;
+							alu_opcode <= ALU_SHAR;
 
 						when OP_SHR =>
 							cpu_state <= EXECUTE_ALU_REGCONST_1;

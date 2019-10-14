@@ -16,6 +16,7 @@ package opcodes is
 			
 			ALU_SHL,		-- shift left
 			ALU_SHR,		-- shift right 
+			ALU_SHAR,		-- shift-arithmetic left
 			ALU_ROL,		-- rotate left
 			ALU_ROR,		-- rotate right 
 			ALU_RCL,		-- rotate-carry-left
@@ -48,6 +49,7 @@ package opcodes is
 	constant OP_XOR			: std_logic_vector(7 downto 0):="11000011";  -- A = A xor arg
 	constant OP_SHR 		: std_logic_vector(7 downto 0):="11000100";  -- shift A right by arg
 	constant OP_SHL 		: std_logic_vector(7 downto 0):="11000101";  -- shift A left by arg
+	constant OP_SHAR 		: std_logic_vector(7 downto 0):="11000110";  -- shift A right by arg
 	constant OP_ROL 		: std_logic_vector(7 downto 0):="11000111";  -- rotate right
 	constant OP_ROR 		: std_logic_vector(7 downto 0):="11001000";  -- rotate left
 	constant OP_RCL 		: std_logic_vector(7 downto 0):="11001001";  -- rotate through carry right
