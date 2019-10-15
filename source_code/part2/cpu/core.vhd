@@ -360,8 +360,22 @@ begin
 
 						when OP_SEVENSEGTRANSLATE =>
 							case accumulator(3 downto 0) is 
-								when "0000" => accumulator <= "01010101";
-								when others => accumulator <= "10101010";
+								when "0000" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00001000" or "00000100";
+								when "0001" => accumulator <= "01000000" or "00100000";
+								when "0010" => accumulator <= "10000000" or "01000000" or "00000010" or "00001000" or "00010000";
+								when "0011" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00000010"; 
+								when "0100" => accumulator <= "00000100" or "01000000" or "00000010" or "00100000";
+								when "0101" => accumulator <= "10000000" or "00000100" or "00000010" or "00100000" or "00010000";
+								when "0110" => accumulator <= "10000000" or "00000100" or "00000010" or "00001000" or "00100000" or "00010000";
+								when "0111" => accumulator <= "10000000" or "01000000" or "00100000";
+								when "1000" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00001000" or "00000100" or "00000010";
+								when "1001" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00000100" or "00000010";
+								when "1010" => accumulator <= "10000000" or "01000000" or "00100000" or "00001000" or "00000100" or "00000010";
+								when "1011" => accumulator <= "00100000" or "00010000" or "00001000" or "00000100" or "00000010";
+								when "1100" => accumulator <= "10000000" or "00010000" or "00001000" or "00000100";
+								when "1101" => accumulator <= "01000000" or "00100000" or "00010000" or "00001000" or "00000010";
+								when "1110" => accumulator <= "10000000" or "00010000" or "00001000" or "00000100" or "00000010";
+								when "1111" => accumulator <= "10000000" or "00001000" or "00000100" or "00000010";
 							end case;
 							cpu_state <= FETCH_0;
 
