@@ -34,7 +34,7 @@ constant c_A  : std_logic_vector(7 downto 0):=b"10000000";
 constant c_B  : std_logic_vector(7 downto 0):=b"10000001";
 constant c_C  : std_logic_vector(7 downto 0):=b"10000010";
 
-signal mem: mem_type := (
+signal mem: mem_type:= (
 	OP_LDC, c_1,
 	OP_STA, c_A,
 	OP_STA, c_B,
@@ -43,13 +43,13 @@ signal mem: mem_type := (
 	OP_LDA, c_A,
 	OP_ADD, c_B,
 	OP_STA, c_C,
-	
+
 	OP_LDA, c_B,
 	OP_STA, c_A,
-	
+
 	OP_LDA, c_C,
 	OP_STA, c_B,
-	
+
 	OP_OUT, c_4, 
 	OP_OUT, c_5, 
 	OP_OUT, c_6, 

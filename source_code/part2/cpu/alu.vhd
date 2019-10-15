@@ -22,6 +22,7 @@ architecture behaviour of ALU is
 begin
 	process (left_arg, right_arg, operation, carry_in)
 		variable temp : std_logic_vector(8 downto 0);
+		variable mask : std_logic_vector(8 downto 0);
 	begin
 	
 		flags.overflow <= '0';
@@ -45,89 +46,95 @@ begin
 					flags.overflow <= '0';
 				end if;
 
-			when ALU_NEG =>
-				temp :=  0 - ('0'&left_arg);
-
+-- 			when ALU_NEG =>
+-- 				temp :=  0 - ('0'&left_arg);
+-- 
 			when ALU_OR =>
-				temp := ('0' & left_arg) or ('0' & right_arg);
+				temp := carry_in & (left_arg or right_arg);
 				
 			when ALU_AND =>
-				temp := ('0' & left_arg) and ('0' & right_arg);
+				temp := carry_in & (left_arg and right_arg);
 
 			when ALU_XOR =>
-				temp := ('0' & left_arg) xor ('0' & right_arg);
+				temp := carry_in & (left_arg xor right_arg);
 				
-			when ALU_NOT =>
-				temp := not ('0' & left_arg);
+-- 			when ALU_NOT =>
+-- 				temp := carry_in & (not left_arg);
 			
 			when ALU_SHR => 
 				-- a bit wordy...
 				case right_arg is 
-					when "00000000" => temp := "0" & left_arg(7 downto 0); 
-					when "00000001" => temp := "00" & left_arg(7 downto 1); 
-					when "00000010" => temp := "000" & left_arg(7 downto 2); 
-					when "00000011" => temp := "0000" & left_arg(7 downto 3); 
-					when "00000100" => temp := "00000" & left_arg(7 downto 4); 
-					when "00000101" => temp := "000000" & left_arg(7 downto 5); 
-					when "00000110" => temp := "0000000" & left_arg(7 downto 6); 
-					when "00000111" => temp := "00000000" & left_arg(7); 
-					when others 	=> temp := "000000000";
+					when "00000000" => temp := carry_in & left_arg(7 downto 0); 
+					when "00000001" => temp := carry_in & "0" & left_arg(7 downto 1); 
+					when "00000010" => temp := carry_in & "00" & left_arg(7 downto 2); 
+					when "00000011" => temp := carry_in & "000" & left_arg(7 downto 3); 
+					when "00000100" => temp := carry_in & "0000" & left_arg(7 downto 4); 
+					when "00000101" => temp := carry_in & "00000" & left_arg(7 downto 5); 
+					when "00000110" => temp := carry_in & "000000" & left_arg(7 downto 6); 
+					when "00000111" => temp := carry_in & "0000000" & left_arg(7); 
+					when others 	=> temp := carry_in & "00000000";
 				end case;
 
 			when ALU_SHAR => 
 				-- a bit wordy...
+				if left_arg(7) = '1' then 
+					mask = "11111111";
+				else 
+					mask = "00000000";
+				end if;
+				
 				case right_arg is 
-					when "00000000" => temp := '0' & left_arg(7 downto 0); 
-					when "00000001" => temp := '0' & left_arg(7) & left_arg(7 downto 1); 
-					when "00000010" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7 downto 2); 
-					when "00000011" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7 downto 3); 
-					when "00000100" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7 downto 4); 
-					when "00000101" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7 downto 5); 
-					when "00000110" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7 downto 6); 
-					when "00000111" => temp := '0' & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7) & left_arg(7); 
-					when others 	=> temp := '0' & "00000000";
+					when "00000000" => temp := carry_in & left_arg(7 downto 0); 
+					when "00000001" => temp := carry_in & mask(7)          & left_arg(7 downto 1); 
+					when "00000010" => temp := carry_in & mask(7 downto 6) & left_arg(7 downto 2); 
+					when "00000011" => temp := carry_in & mask(7 downto 5) & left_arg(7 downto 3); 
+					when "00000100" => temp := carry_in & mask(7 downto 4) & left_arg(7 downto 4); 
+					when "00000101" => temp := carry_in & mask(7 downto 3) & left_arg(7 downto 5); 
+					when "00000110" => temp := carry_in & mask(7 downto 2) & left_arg(7 downto 6); 
+					when "00000111" => temp := carry_in & mask(7 downto 1) & left_arg(7); 
+					when others 	=> temp := carry_in & "00000000";
 				end case;
 			
 			when ALU_SHL => 
 				-- a bit wordy... also... 
 				case right_arg is 
-					when "00000000" => temp := '0' & left_arg(7 downto 0);
-					when "00000001" => temp := '0' & left_arg(6 downto 0) & '0';
-					when "00000010" => temp := '0' & left_arg(5 downto 0) & "00";
-					when "00000011" => temp := '0' & left_arg(4 downto 0) & "000";
-					when "00000100" => temp := '0' & left_arg(3 downto 0) & "0000"; 
-					when "00000101" => temp := '0' & left_arg(2 downto 0) & "00000";
-					when "00000110" => temp := '0' & left_arg(1 downto 0) & "000000";
-					when "00000111" => temp := '0' & left_arg(0) 		  & "0000000";
-					when others 	=> temp := "000000000";
+					when "00000000" => temp := carry_in & left_arg(7 downto 0);
+					when "00000001" => temp := carry_in & left_arg(6 downto 0) & '0';
+					when "00000010" => temp := carry_in & left_arg(5 downto 0) & "00";
+					when "00000011" => temp := carry_in & left_arg(4 downto 0) & "000";
+					when "00000100" => temp := carry_in & left_arg(3 downto 0) & "0000"; 
+					when "00000101" => temp := carry_in & left_arg(2 downto 0) & "00000";
+					when "00000110" => temp := carry_in & left_arg(1 downto 0) & "000000";
+					when "00000111" => temp := carry_in & left_arg(0) 		  & "0000000";
+					when others 	=> temp := carry_in & "00000000";
 				end case;
 
 			when ALU_ROR => 
 				-- a bit wordy...
 				case right_arg(2 downto 0) is 
-					when "000" 	=> temp := '0' & left_arg(7 downto 0); 
-					when "001" 	=> temp := '0' & left_arg(0)           & left_arg(7 downto 1); 
-					when "010" 	=> temp := '0' & left_arg(1 downto 0 ) & left_arg(7 downto 2); 
-					when "011" 	=> temp := '0' & left_arg(2 downto 0 ) & left_arg(7 downto 3); 
-					when "100" 	=> temp := '0' & left_arg(3 downto 0 ) & left_arg(7 downto 4); 
-					when "101" 	=> temp := '0' & left_arg(4 downto 0 ) & left_arg(7 downto 5); 
-					when "110" 	=> temp := '0' & left_arg(5 downto 0 ) & left_arg(7 downto 6); 
-					when "111" 	=> temp := '0' & left_arg(6 downto 0 ) & left_arg(7); 
-					when others => temp := "000000000";
+					when "000" 	=> temp := carry_in & left_arg(7 downto 0); 
+					when "001" 	=> temp := carry_in & left_arg(0)           & left_arg(7 downto 1); 
+					when "010" 	=> temp := carry_in & left_arg(1 downto 0 ) & left_arg(7 downto 2); 
+					when "011" 	=> temp := carry_in & left_arg(2 downto 0 ) & left_arg(7 downto 3); 
+					when "100" 	=> temp := carry_in & left_arg(3 downto 0 ) & left_arg(7 downto 4); 
+					when "101" 	=> temp := carry_in & left_arg(4 downto 0 ) & left_arg(7 downto 5); 
+					when "110" 	=> temp := carry_in & left_arg(5 downto 0 ) & left_arg(7 downto 6); 
+					when "111" 	=> temp := carry_in & left_arg(6 downto 0 ) & left_arg(7); 
+					when others => temp := carry_in & "00000000";
 				end case;
 			
 			when ALU_ROL => 
 				-- a bit wordy... also... 
 				case right_arg(2 downto 0) is 
-					when "000" 	=> temp := '0' & left_arg(7 downto 0); 
-					when "001" 	=> temp := '0' & left_arg(7 downto 1) & left_arg(0);
-					when "010" 	=> temp := '0' & left_arg(7 downto 2) & left_arg(1 downto 0);
-					when "011" 	=> temp := '0' & left_arg(7 downto 3) & left_arg(2 downto 0);
-					when "100" 	=> temp := '0' & left_arg(7 downto 4) & left_arg(3 downto 0);
-					when "101" 	=> temp := '0' & left_arg(7 downto 5) & left_arg(4 downto 0);
-					when "110" 	=> temp := '0' & left_arg(7 downto 6) & left_arg(5 downto 0);
-					when "111" 	=> temp := '0' & left_arg(7)          & left_arg(6 downto 0);
-					when others => temp := "000000000";
+					when "000" 	=> temp := carry_in & left_arg(7 downto 0); 
+					when "001" 	=> temp := carry_in & left_arg(7 downto 1) & left_arg(0);
+					when "010" 	=> temp := carry_in & left_arg(7 downto 2) & left_arg(1 downto 0);
+					when "011" 	=> temp := carry_in & left_arg(7 downto 3) & left_arg(2 downto 0);
+					when "100" 	=> temp := carry_in & left_arg(7 downto 4) & left_arg(3 downto 0);
+					when "101" 	=> temp := carry_in & left_arg(7 downto 5) & left_arg(4 downto 0);
+					when "110" 	=> temp := carry_in & left_arg(7 downto 6) & left_arg(5 downto 0);
+					when "111" 	=> temp := carry_in & left_arg(7)          & left_arg(6 downto 0);
+					when others => temp := carry_in & "00000000";
 				end case;
 
 			
@@ -149,14 +156,14 @@ begin
 				-- a bit wordy... also... 
 				case right_arg(2 downto 0) is 
 					when "000" 	=> temp := carry_in & left_arg(7 downto 0); 
-					when "001" => temp := left_arg(7 downto 1) & carry_in & left_arg(0);
-					when "010" => temp := left_arg(7 downto 2) & carry_in & left_arg(1 downto 0);
-					when "011" => temp := left_arg(7 downto 3) & carry_in & left_arg(2 downto 0);
-					when "100" => temp := left_arg(7 downto 4) & carry_in & left_arg(3 downto 0);
-					when "101" => temp := left_arg(7 downto 5) & carry_in & left_arg(4 downto 0);
-					when "110" => temp := left_arg(7 downto 6) & carry_in & left_arg(5 downto 0);
-					when "111" => temp := left_arg(7)          & carry_in & left_arg(6 downto 0);
-					when others 	=> temp := "000000000";
+					when "001" 	=> temp := left_arg(7 downto 1) & carry_in & left_arg(0);
+					when "010" 	=> temp := left_arg(7 downto 2) & carry_in & left_arg(1 downto 0);
+					when "011" 	=> temp := left_arg(7 downto 3) & carry_in & left_arg(2 downto 0);
+					when "100" 	=> temp := left_arg(7 downto 4) & carry_in & left_arg(3 downto 0);
+					when "101" 	=> temp := left_arg(7 downto 5) & carry_in & left_arg(4 downto 0);
+					when "110" 	=> temp := left_arg(7 downto 6) & carry_in & left_arg(5 downto 0);
+					when "111" 	=> temp := left_arg(7)          & carry_in & left_arg(6 downto 0);
+					when others => temp := "000000000";
 				end case;
 
 						

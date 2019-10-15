@@ -1,11 +1,14 @@
 library ieee ;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all ;
+
 use work.opcodes.all;
 use work.types.all;
 
 entity soc is 
 	port (
-		CLK_100MHz : in std_logic; 
+		clk : in std_logic; 
+		rst_n		: in std_logic;
 		
 		DPSwitch_0 : in std_logic; -- pull up by default 
 		DPSwitch_1 : in std_logic; -- pull up by default 
@@ -164,9 +167,14 @@ architecture structural of soc is
 	signal out_port_7 : std_logic_vector (7 downto 0); -- pin header 8
 	signal out_port_8 : std_logic_vector (7 downto 0); -- pin header 9
 	
+	signal cnt : std_logic_vector(27 downto 0) := (others => '0');
+	
 begin 
+
+	cnt <= cnt + 1 when rising_edge(clk);
+
 	c : cpu port map (
-			clk				=> CLK_100MHz,
+			clk				=> cnt(20),
 			reset			=> reset,
 			error			=> error,
 
@@ -184,7 +192,7 @@ begin
 	);
 	
 	p: pio port map (
-		clk					=> CLK_100MHz,
+		clk					=> cnt(20),
 		
 		address 			=> pio_address,
 		data_w				=> data_from_cpu_to_pio,
@@ -206,7 +214,7 @@ begin
 	);
 	
 	m: memory port map (
-		clk					=> CLK_100MHz,
+		clk					=> cnt(20),
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
@@ -215,7 +223,7 @@ begin
 	);
 	
 	-- Finally - manual signal wirings 
-	reset <= not Switch_5; -- it is pull up
+	reset <= '0'; -- not Switch_5; -- it is pull up
 	
 	in_port_1(7 downto 5) <= "000"; -- NC really
 	in_port_1(4) <= not Switch_4;
@@ -225,13 +233,13 @@ begin
 	in_port_1(0) <= not Switch_0;
 	
 	LED_7 <= error; 
-	LED_6 <= out_port_4(6);
-	LED_5 <= out_port_4(5);
-	LED_4 <= out_port_4(4);
-	LED_3 <= out_port_4(3);
-	LED_2 <= out_port_4(2);
-	LED_1 <= out_port_4(1);
-	LED_0 <= out_port_4(0);
+	LED_6 <=  out_port_4(6);
+	LED_5 <=  out_port_4(5);
+	LED_4 <=  out_port_4(4);
+	LED_3 <=  out_port_4(3);
+	LED_2 <=  out_port_4(2);
+	LED_1 <=  out_port_4(1);
+	LED_0 <=  out_port_4(0);
 	
 	in_port_0(0) <= DPSwitch_0;
 	in_port_0(1) <= DPSwitch_1;

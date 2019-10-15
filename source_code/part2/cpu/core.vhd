@@ -123,92 +123,197 @@ begin
 						when OP_NOP =>
 							cpu_state <= FETCH_0;
 
+						-- 
+						-- 
+						-- Load/Store instructions 
+						-- 
+						-- 						
 						when OP_STA =>
 							cpu_state <= EXECUTE_STA_1;
 
-						when OP_LDA =>	
-							cpu_state <= EXECUTE_LDA_1;
+						when OP_LDA_M =>	
+							cpu_state <= EXECUTE_LDA_MEM_1;
 
-						when OP_LDC => 
-							cpu_state <= EXECUTE_LDC_1;
+						when OP_LDA_V => 
+							cpu_state <= EXECUTE_LDA_VAL_1;
 
-						when OP_ADD =>
+						-- 
+						-- 
+						-- REG-MEM instructions 
+						-- 
+						-- 						
+						when OP_ADD_M =>
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ADD;
 
-						when OP_ADDC =>
+						when OP_ADDC_M =>
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ADD;
 
-						when OP_SUB =>
+						when OP_SUB_M =>
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_SUBC =>
+						when OP_SUBC_M =>
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_NEG =>
-							alu_left <= accumulator;
-							alu_opcode <= ALU_NEG;
-							cpu_state <= STORE;
+						when OP_SUBR_M =>
+							alu_carry_in <= '0';
+							cpu_state <= EXECUTE_ALU_REGMEM_INV_1;
+							alu_opcode <= ALU_SUB;
 
-						when OP_OR =>
+						when OP_SUBRC_M =>
+							alu_carry_in <= flags.carry_out;
+							cpu_state <= EXECUTE_ALU_REGMEM_INV_1;
+							alu_opcode <= ALU_SUB;
+
+						when OP_OR_M =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_OR;
 
-						when OP_AND =>
+						when OP_AND_M =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_AND;
 
-						when OP_XOR =>
+						when OP_XOR_M =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_XOR;
 
-						when OP_SHL =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+
+						when OP_SHL_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHL;
 							
-						when OP_SHAR => 
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_SHAR_M => 
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHAR;
 
-						when OP_SHR =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_SHR_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHR;
 
-						when OP_ROL =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_ROL_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ROL;
 
-						when OP_ROR =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_ROR_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ROR;
 
-						when OP_RCL =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_RCL_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCL;
 
-						when OP_RCR =>
-							cpu_state <= EXECUTE_ALU_REGCONST_1;
+						when OP_RCR_M =>
+							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCR;
 
-						when OP_NOT =>
-							alu_left <= accumulator;
-							alu_opcode <= ALU_NOT;
-							cpu_state <= STORE;
+						-- 
+						-- 
+						-- REG-MEM instructions 
+						-- 
+						-- 						
+						when OP_ADD_V =>
+							alu_carry_in <= '0';
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_ADD;
 
+						when OP_ADDC_V =>
+							alu_carry_in <= flags.carry_out;
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_ADD;
+
+						when OP_SUB_V =>
+							alu_carry_in <= '0';
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_SUB;
+
+						when OP_SUBC_V =>
+							alu_carry_in <= flags.carry_out;
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_SUB;
+
+						when OP_SUBR_V =>
+							alu_carry_in <= '0';
+							cpu_state <= EXECUTE_ALU_REGVAL_INV_1;
+							alu_opcode <= ALU_SUB;
+
+						when OP_SUBRC_V =>
+							alu_carry_in <= flags.carry_out;
+							cpu_state <= EXECUTE_ALU_REGVAL_INV_1;
+							alu_opcode <= ALU_SUB;
+
+						when OP_OR_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_OR;
+
+						when OP_AND_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_AND;
+
+						when OP_XOR_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_XOR;
+
+						when OP_SHL_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_SHL;
+							
+						when OP_SHAR_V => 
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_SHAR;
+
+						when OP_SHR_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_SHR;
+
+						when OP_ROL_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_ROL;
+
+						when OP_ROR_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_opcode <= ALU_ROR;
+
+						when OP_RCL_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_carry_in <= flags.carry_out;
+							alu_opcode <= ALU_RCL;
+
+						when OP_RCR_V =>
+							cpu_state <= EXECUTE_ALU_REGVAL_1;
+							alu_carry_in <= flags.carry_out;
+							alu_opcode <= ALU_RCR;
+
+-- 						when OP_NOT =>
+-- 							alu_left <= accumulator;
+-- 							alu_opcode <= ALU_NOT;
+-- 							cpu_state <= STORE;
+-- 
+
+						-- 
+						-- 
+						-- Port-I/O instructions 
+						-- 
+						-- 						
 						when OP_IN => 
 							cpu_state <= EXECUTE_PORT_IN_1;
 
 						when OP_OUT => 
 							cpu_state <= EXECUTE_PORT_OUT_1;
+
+						-- 
+						-- 
+						-- Branching instructions 
+						-- 
+						-- 						
 
 						when OP_JMP =>
 							cpu_state <= EXECUTE_JMP;
@@ -244,8 +349,21 @@ begin
 								cpu_state <= FETCH_0;
 							end if;
 
+						-- 
+						-- 
+						-- Other/Special instructions 
+						-- 
+						-- 						
+
 						when OP_HLT =>
 							cpu_state <= STOP;
+
+						when OP_SEVENSEGTRANSLATE =>
+							case accumulator(3 downto 0) is 
+								when "0000" => accumulator <= "01010101";
+								when others => accumulator <= "10101010";
+							end case;
+							cpu_state <= FETCH_0;
 
 						when others =>
 							error <= '1';
@@ -263,19 +381,19 @@ begin
  					cpu_state <= FETCH_0;
 
 
-				when EXECUTE_LDA_1 =>
+				when EXECUTE_LDA_MEM_1 =>
 					address_bus <= data_in;
-					cpu_state <= EXECUTE_LDA_2;
+					cpu_state <= EXECUTE_LDA_MEM_2;
 
-				when EXECUTE_LDA_2 =>
-					cpu_state <= EXECUTE_LDA_3;
+				when EXECUTE_LDA_MEM_2 =>
+					cpu_state <= EXECUTE_LDA_MEM_3;
 
-				when EXECUTE_LDA_3 =>
+				when EXECUTE_LDA_MEM_3 =>
 					accumulator <= data_in;	
 					cpu_state <= FETCH_0;
 
 
-				when EXECUTE_LDC_1 =>
+				when EXECUTE_LDA_VAL_1 =>
 					accumulator <= data_in;
 					cpu_state <= FETCH_0;
 
@@ -292,11 +410,28 @@ begin
 					alu_right <= data_in;
 					cpu_state <= STORE;
 
-				when EXECUTE_ALU_REGCONST_1 =>
+				when EXECUTE_ALU_REGMEM_INV_1 =>
+					address_bus <= data_in;
+					cpu_state <= EXECUTE_ALU_REGMEM_INV_2;
+					
+				when EXECUTE_ALU_REGMEM_INV_2 =>
+					cpu_state <= EXECUTE_ALU_REGMEM_INV_3;
+
+				when EXECUTE_ALU_REGMEM_INV_3 =>
+					alu_left <= data_in;
+					alu_right <= accumulator;
+					cpu_state <= STORE;
+
+
+				when EXECUTE_ALU_REGVAL_1 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
 					cpu_state <= STORE;
 
+				when EXECUTE_ALU_REGVAL_INV_1 =>
+					alu_left <= data_in;
+					alu_right <= accumulator;
+					cpu_state <= STORE;
 
 				when EXECUTE_JMP =>
 					program_counter <= data_in;
