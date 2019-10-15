@@ -131,10 +131,10 @@ begin
 						when OP_STA =>
 							cpu_state <= EXECUTE_STA_1;
 
-						when OP_LDA_M =>	
+						when OP_LDA =>	
 							cpu_state <= EXECUTE_LDA_MEM_1;
 
-						when OP_LDA_V => 
+						when OP_LDC => 
 							cpu_state <= EXECUTE_LDA_VAL_1;
 
 						-- 
@@ -142,75 +142,75 @@ begin
 						-- REG-MEM instructions 
 						-- 
 						-- 						
-						when OP_ADD_M =>
+						when OP_ADD =>
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ADD;
 
-						when OP_ADDC_M =>
+						when OP_ADDC =>
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ADD;
 
-						when OP_SUB_M =>
+						when OP_SUB =>
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_SUBC_M =>
+						when OP_SUBC =>
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_SUBR_M =>
+						when OP_SUBR =>
 							alu_carry_in <= '0';
 							cpu_state <= EXECUTE_ALU_REGMEM_INV_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_SUBRC_M =>
+						when OP_SUBRC =>
 							alu_carry_in <= flags.carry_out;
 							cpu_state <= EXECUTE_ALU_REGMEM_INV_1;
 							alu_opcode <= ALU_SUB;
 
-						when OP_OR_M =>
+						when OP_OR =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_OR;
 
-						when OP_AND_M =>
+						when OP_AND =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_AND;
 
-						when OP_XOR_M =>
+						when OP_XOR =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_XOR;
 
 
-						when OP_SHL_M =>
+						when OP_SHL =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHL;
 							
-						when OP_SHAR_M => 
+						when OP_SHAR => 
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHAR;
 
-						when OP_SHR_M =>
+						when OP_SHR =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_SHR;
 
-						when OP_ROL_M =>
+						when OP_ROL =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ROL;
 
-						when OP_ROR_M =>
+						when OP_ROR =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_opcode <= ALU_ROR;
 
-						when OP_RCL_M =>
+						when OP_RCL =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCL;
 
-						when OP_RCR_M =>
+						when OP_RCR =>
 							cpu_state <= EXECUTE_ALU_REGMEM_1;
 							alu_carry_in <= flags.carry_out;
 							alu_opcode <= ALU_RCR;
@@ -360,22 +360,23 @@ begin
 
 						when OP_SEVENSEGTRANSLATE =>
 							case accumulator(3 downto 0) is 
-								when "0000" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00001000" or "00000100";
-								when "0001" => accumulator <= "01000000" or "00100000";
-								when "0010" => accumulator <= "10000000" or "01000000" or "00000010" or "00001000" or "00010000";
-								when "0011" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00000010"; 
-								when "0100" => accumulator <= "00000100" or "01000000" or "00000010" or "00100000";
-								when "0101" => accumulator <= "10000000" or "00000100" or "00000010" or "00100000" or "00010000";
-								when "0110" => accumulator <= "10000000" or "00000100" or "00000010" or "00001000" or "00100000" or "00010000";
-								when "0111" => accumulator <= "10000000" or "01000000" or "00100000";
-								when "1000" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00001000" or "00000100" or "00000010";
-								when "1001" => accumulator <= "10000000" or "01000000" or "00100000" or "00010000" or "00000100" or "00000010";
-								when "1010" => accumulator <= "10000000" or "01000000" or "00100000" or "00001000" or "00000100" or "00000010";
-								when "1011" => accumulator <= "00100000" or "00010000" or "00001000" or "00000100" or "00000010";
-								when "1100" => accumulator <= "10000000" or "00010000" or "00001000" or "00000100";
-								when "1101" => accumulator <= "01000000" or "00100000" or "00010000" or "00001000" or "00000010";
-								when "1110" => accumulator <= "10000000" or "00010000" or "00001000" or "00000100" or "00000010";
-								when "1111" => accumulator <= "10000000" or "00001000" or "00000100" or "00000010";
+								when "0000" => accumulator <= "11111100";
+								when "0001" => accumulator <= "01100000";
+								when "0010" => accumulator <= "11011010";
+								when "0011" => accumulator <= "11110010"; 
+								when "0100" => accumulator <= "01100110";
+								when "0101" => accumulator <= "10110110";
+								when "0110" => accumulator <= "10111110";
+								when "0111" => accumulator <= "11100000";
+								when "1000" => accumulator <= "11111110";
+								when "1001" => accumulator <= "11110110";
+								when "1010" => accumulator <= "11101110";
+								when "1011" => accumulator <= "00111110";
+								when "1100" => accumulator <= "10011100";
+								when "1101" => accumulator <= "01111010";
+								when "1110" => accumulator <= "10011110";
+								when "1111" => accumulator <= "10001110";								
+								when others => accumulator <= "01010101";
 							end case;
 							cpu_state <= FETCH_0;
 

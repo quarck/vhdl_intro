@@ -35,26 +35,36 @@ constant c_B  : std_logic_vector(7 downto 0):=b"10000001";
 constant c_C  : std_logic_vector(7 downto 0):=b"10000010";
 
 signal mem: mem_type:= (
-	OP_LDA_V, c_1,
+	OP_LDC, c_1,
 	OP_STA, c_A,
 	OP_STA, c_B,
 
 -- addr 6:
-	OP_LDA_M, c_A,
-	OP_ADD_M, c_B,
+	OP_LDA, c_A,
+	OP_ADD, c_B,
 	OP_STA, c_C,
 
-	OP_LDA_M, c_B,
+	OP_LDA, c_B,
 	OP_STA, c_A,
 
-	OP_LDA_M, c_C,
+	OP_LDA, c_C,
 	OP_STA, c_B,
 
-	OP_OUT, c_4, 
-	OP_OUT, c_5, 
+	OP_LDC, c_1, 	-- select LCD display
 	OP_OUT, c_6, 
-	OP_OUT, c_7, 
-	OP_OUT, c_8, 
+	OP_LDA, c_C,	-- output the number part
+	OP_SEVENSEGTRANSLATE, c_0,
+	OP_OUT, c_5,
+	
+	OP_LDC, c_2, 	-- select LCD display
+	OP_OUT, c_6,
+	OP_LDA, c_C,	-- output the number part
+	OP_SHL_V, c_4,
+	OP_SEVENSEGTRANSLATE, c_0,
+	OP_OUT, c_5,
+	
+	OP_LDA, c_C,	-- output the number part into 8-leds 		
+	OP_OUT, c_4, 
 		
 	OP_JMP, c_6,
 

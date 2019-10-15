@@ -22,7 +22,7 @@ architecture behaviour of ALU is
 begin
 	process (left_arg, right_arg, operation, carry_in)
 		variable temp : std_logic_vector(8 downto 0);
-		variable mask : std_logic_vector(8 downto 0);
+		variable mask : std_logic_vector(7 downto 0);
 	begin
 	
 		flags.overflow <= '0';
@@ -78,9 +78,9 @@ begin
 			when ALU_SHAR => 
 				-- a bit wordy...
 				if left_arg(7) = '1' then 
-					mask = "11111111";
+					mask := "11111111";
 				else 
-					mask = "00000000";
+					mask := "00000000";
 				end if;
 				
 				case right_arg is 

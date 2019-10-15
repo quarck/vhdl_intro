@@ -174,7 +174,7 @@ begin
 	cnt <= cnt + 1 when rising_edge(clk);
 
 	c : cpu port map (
-			clk				=> cnt(20),
+			clk				=> cnt(18),
 			reset			=> reset,
 			error			=> error,
 
@@ -192,7 +192,7 @@ begin
 	);
 	
 	p: pio port map (
-		clk					=> cnt(20),
+		clk					=> cnt(18),
 		
 		address 			=> pio_address,
 		data_w				=> data_from_cpu_to_pio,
@@ -214,7 +214,7 @@ begin
 	);
 	
 	m: memory port map (
-		clk					=> cnt(20),
+		clk					=> cnt(18),
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
@@ -223,7 +223,7 @@ begin
 	);
 	
 	-- Finally - manual signal wirings 
-	reset <= '0'; -- not Switch_5; -- it is pull up
+	reset <= not Switch_5; -- it is pull up
 	
 	in_port_1(7 downto 5) <= "000"; -- NC really
 	in_port_1(4) <= not Switch_4;
@@ -232,14 +232,14 @@ begin
 	in_port_1(1) <= not Switch_1;
 	in_port_1(0) <= not Switch_0;
 	
-	LED_7 <= error; 
-	LED_6 <=  out_port_4(6);
-	LED_5 <=  out_port_4(5);
-	LED_4 <=  out_port_4(4);
-	LED_3 <=  out_port_4(3);
-	LED_2 <=  out_port_4(2);
-	LED_1 <=  out_port_4(1);
-	LED_0 <=  out_port_4(0);
+	LED_7 <= out_port_4(7);
+	LED_6 <= out_port_4(6);
+	LED_5 <= out_port_4(5);
+	LED_4 <= out_port_4(4);
+	LED_3 <= out_port_4(3);
+	LED_2 <= out_port_4(2);
+	LED_1 <= out_port_4(1);
+	LED_0 <= out_port_4(0);
 	
 	in_port_0(0) <= DPSwitch_0;
 	in_port_0(1) <= DPSwitch_1;

@@ -30,17 +30,17 @@ package opcodes is
 	-- load and store instructions 
 	-- prefix 001
 	constant OP_STA 		: std_logic_vector(7 downto 0):="00100000";  -- mem[arg] = A
-	constant OP_LDA_M 		: std_logic_vector(7 downto 0):="00100001";  -- A = mem[arg]
-	constant OP_LDA_V 		: std_logic_vector(7 downto 0):="00100010";  -- A = arg
+	constant OP_LDA 		: std_logic_vector(7 downto 0):="00100001";  -- A = mem[arg]
+	constant OP_LDC 		: std_logic_vector(7 downto 0):="00100010";  -- A = arg
 	
 	-- math instructions 
 	-- prefix 010
-	constant OP_ADD_M 		: std_logic_vector(7 downto 0):="01000000";  -- A = A + mem[arg]
-	constant OP_ADDC_M 		: std_logic_vector(7 downto 0):="01000010";  -- A = A + mem[arg] + carry
-	constant OP_SUB_M 		: std_logic_vector(7 downto 0):="01000011";  -- A = A - mem[arg]
-	constant OP_SUBC_M 		: std_logic_vector(7 downto 0):="01000100";  -- A = A - mem[arg] - carry
-	constant OP_SUBR_M 		: std_logic_vector(7 downto 0):="01000101";  -- A = mem[arg] - A
-	constant OP_SUBRC_M 	: std_logic_vector(7 downto 0):="01000110";  -- A = mem[arg] - A - carry	
+	constant OP_ADD 		: std_logic_vector(7 downto 0):="01000000";  -- A = A + mem[arg]
+	constant OP_ADDC 		: std_logic_vector(7 downto 0):="01000010";  -- A = A + mem[arg] + carry
+	constant OP_SUB 		: std_logic_vector(7 downto 0):="01000011";  -- A = A - mem[arg]
+	constant OP_SUBC 		: std_logic_vector(7 downto 0):="01000100";  -- A = A - mem[arg] - carry
+	constant OP_SUBR 		: std_logic_vector(7 downto 0):="01000101";  -- A = mem[arg] - A
+	constant OP_SUBRC		: std_logic_vector(7 downto 0):="01000110";  -- A = mem[arg] - A - carry	
 	
 	constant OP_ADD_V 		: std_logic_vector(7 downto 0):="01010000";  -- A = A + arg
 	constant OP_ADDC_V 		: std_logic_vector(7 downto 0):="01010010";  -- A = A + arg + carry
@@ -54,16 +54,16 @@ package opcodes is
 	
 	-- logical and bit instructions 
 	-- prefix 011
-	constant OP_OR_M  		: std_logic_vector(7 downto 0):="01100000";  -- A = A or mem[arg]
-	constant OP_AND_M		: std_logic_vector(7 downto 0):="01100001";  -- A = A and mem[arg]
-	constant OP_XOR_M		: std_logic_vector(7 downto 0):="01100010";  -- A = A xor mem[arg]
-	constant OP_SHR_M 		: std_logic_vector(7 downto 0):="01100011";  -- shift A right by mem[arg]
-	constant OP_SHL_M 		: std_logic_vector(7 downto 0):="01100100";  -- shift A left by mem[arg]
-	constant OP_SHAR_M 		: std_logic_vector(7 downto 0):="01100101";  -- shift A right by mem[arg]
-	constant OP_ROL_M 		: std_logic_vector(7 downto 0):="01100110";  -- rotate right by mem[arg]
-	constant OP_ROR_M 		: std_logic_vector(7 downto 0):="01100111";  -- rotate left by mem[arg]
-	constant OP_RCL_M 		: std_logic_vector(7 downto 0):="01101000";  -- rotate through carry right by mem[arg]
-	constant OP_RCR_M 		: std_logic_vector(7 downto 0):="01101001";  -- rotate through carry left by mem[arg]
+	constant OP_OR  		: std_logic_vector(7 downto 0):="01100000";  -- A = A or mem[arg]
+	constant OP_AND			: std_logic_vector(7 downto 0):="01100001";  -- A = A and mem[arg]
+	constant OP_XOR			: std_logic_vector(7 downto 0):="01100010";  -- A = A xor mem[arg]
+	constant OP_SHR 		: std_logic_vector(7 downto 0):="01100011";  -- shift A right by mem[arg]
+	constant OP_SHL 		: std_logic_vector(7 downto 0):="01100100";  -- shift A left by mem[arg]
+	constant OP_SHAR 		: std_logic_vector(7 downto 0):="01100101";  -- shift A right by mem[arg]
+	constant OP_ROL 		: std_logic_vector(7 downto 0):="01100110";  -- rotate right by mem[arg]
+	constant OP_ROR 		: std_logic_vector(7 downto 0):="01100111";  -- rotate left by mem[arg]
+	constant OP_RCL 		: std_logic_vector(7 downto 0):="01101000";  -- rotate through carry right by mem[arg]
+	constant OP_RCR 		: std_logic_vector(7 downto 0):="01101001";  -- rotate through carry left by mem[arg]
 
 	constant OP_OR_V  		: std_logic_vector(7 downto 0):="01110000";  -- A = A or arg
 	constant OP_AND_V		: std_logic_vector(7 downto 0):="01110001";  -- A = A and arg
