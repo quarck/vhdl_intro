@@ -4,6 +4,8 @@ use ieee.std_logic_1164.all ;
 entity pio is 
 	port (
 		clk				: in std_logic;
+		clk_unscaled	: in std_logic;
+		rst 			: in std_logic;
 		address 		: in std_logic_vector(7 downto 0);
 		data_w			: in std_logic_vector(7 downto 0); -- data entering IO port 
 		data_r			: out std_logic_vector(7 downto 0);
@@ -25,9 +27,37 @@ entity pio is
 end pio;
 
 architecture beh of pio is 
+
+	component sevenseg is
+		port
+		(
+			clk						: in std_logic; 
+			rst						: in std_logic;
+			segment_select			: in std_logic_vector(7 downto 0); -- binary encoded 
+			segments_active_high	: in std_logic_vector(7 downto 0);
+			sel_port_out			: out std_logic_vector(7 downto 0);
+			data_port_out			: out std_logic_vector(7 downto 0)
+		);
+	end component;
+
+
 	type io_state_type is (IO_IDLE, IO_BUSY);		
 	signal state : io_state_type := IO_IDLE;
-begin	
+	
+	signal segment_select		: std_logic_vector(7 downto 0); -- binary encoded 
+	signal segments_active_high	: std_logic_vector(7 downto 0);
+
+begin
+	ss: sevenseg port map
+		(
+			clk						=> clk_unscaled, 
+			rst						=> rst,
+			segment_select			=> segment_select,
+			segments_active_high	=> segments_active_high,
+			sel_port_out			=> out_port_6,
+			data_port_out			=> out_port_5
+		);
+
 	process (clk, data_w, write_enable, read_enable)
 	begin
 		if rising_edge(clk) then
@@ -38,8 +68,8 @@ begin
 					if write_enable = '1' then 
 						case address is 
 							when "00000100" => out_port_4 <= data_w;
-							when "00000101" => out_port_5 <= data_w;
-							when "00000110" => out_port_6 <= data_w;
+							when "00000101" => segments_active_high <= data_w;
+							when "00000110" => segment_select <= data_w;
 							when "00000111" => out_port_7 <= data_w;
 							when "00001000" => out_port_8 <= data_w;
 							when others		=> 

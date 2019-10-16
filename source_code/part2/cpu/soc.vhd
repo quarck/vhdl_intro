@@ -121,6 +121,8 @@ architecture structural of soc is
 	component pio is 
 		port (
 			clk			: in std_logic;
+			clk_unscaled	: in std_logic;
+			rst			: in std_logic;
 			address 	: in std_logic_vector(7 downto 0);
 			data_w		: in std_logic_vector(7 downto 0); -- data entering IO port 
 			data_r		: out std_logic_vector(7 downto 0);
@@ -193,13 +195,14 @@ begin
 	
 	p: pio port map (
 		clk					=> cnt(18),
-		
-		address 			=> pio_address,
+		clk_unscaled		=> clk, 
+		rst					=> reset,
+		address 				=> pio_address,
 		data_w				=> data_from_cpu_to_pio,
 		data_r				=> data_from_pio_to_cpu,
 		write_enable		=> pio_write_enable,
 		read_enable			=> pio_read_enable,
-		io_ready			=> pio_io_ready,
+		io_ready				=> pio_io_ready,
 		
 		in_port_0			=> in_port_0,
 		in_port_1			=> in_port_1,
