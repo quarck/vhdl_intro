@@ -359,26 +359,7 @@ begin
 							cpu_state <= STOP;
 
 						when OP_SEVENSEGTRANSLATE =>
-							case accumulator(3 downto 0) is 
-								when "0000" => accumulator <= "11111100";
-								when "0001" => accumulator <= "01100000";
-								when "0010" => accumulator <= "11011010";
-								when "0011" => accumulator <= "11110010"; 
-								when "0100" => accumulator <= "01100110";
-								when "0101" => accumulator <= "10110110";
-								when "0110" => accumulator <= "10111110";
-								when "0111" => accumulator <= "11100000";
-								when "1000" => accumulator <= "11111110";
-								when "1001" => accumulator <= "11110110";
-								when "1010" => accumulator <= "11101110";
-								when "1011" => accumulator <= "00111110";
-								when "1100" => accumulator <= "10011100";
-								when "1101" => accumulator <= "01111010";
-								when "1110" => accumulator <= "10011110";
-								when "1111" => accumulator <= "10001110";								
-								when others => accumulator <= "01010101";
-							end case;
-							cpu_state <= FETCH_0;
+							cpu_state <= EXECUTE_SEVENSEGMENTTRANSLATE_1;
 
 						when others =>
 							error <= '1';
@@ -447,6 +428,34 @@ begin
 					alu_left <= data_in;
 					alu_right <= accumulator;
 					cpu_state <= STORE;
+					
+				when EXECUTE_SEVENSEGMENTTRANSLATE_1 => 
+					alu_opcode <= ALU_SHR;
+					alu_left <= accumulator;
+					alu_right <= data_in;
+					cpu_state <= EXECUTE_SEVENSEGMENTTRANSLATE_2;
+					
+				when EXECUTE_SEVENSEGMENTTRANSLATE_2 => 						
+					case alu_result(3 downto 0) is 
+						when "0000" => accumulator <= "11111100";
+						when "0001" => accumulator <= "01100000";
+						when "0010" => accumulator <= "11011010";
+						when "0011" => accumulator <= "11110010"; 
+						when "0100" => accumulator <= "01100110";
+						when "0101" => accumulator <= "10110110";
+						when "0110" => accumulator <= "10111110";
+						when "0111" => accumulator <= "11100000";
+						when "1000" => accumulator <= "11111110";
+						when "1001" => accumulator <= "11110110";
+						when "1010" => accumulator <= "11101110";
+						when "1011" => accumulator <= "00111110";
+						when "1100" => accumulator <= "10011100";
+						when "1101" => accumulator <= "01111010";
+						when "1110" => accumulator <= "10011110";
+						when "1111" => accumulator <= "10001110";								
+						when others => accumulator <= "01010101";
+					end case;
+					cpu_state <= FETCH_0;
 
 				when EXECUTE_JMP =>
 					program_counter <= data_in;

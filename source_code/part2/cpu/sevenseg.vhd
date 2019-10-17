@@ -19,7 +19,7 @@ end sevenseg;
 
 architecture behaviour of sevenseg is	
 	
-	subtype counter_type is integer range 0 to 4095;	
+	subtype counter_type is integer range 0 to 65535;	
 	type seven_seg_state is ( DISPLAYING_DG_0, DISPLAYING_DG_1, DISPLAYING_DG_2 );
 	type digits_array is array (2 downto 0) of std_logic_vector(7 downto 0); 
 
@@ -41,9 +41,8 @@ begin
 			
 			case state is 
 				when DISPLAYING_DG_0 => 
-					sel_port_out <= "00000001";
-					data_port_out <= digits(0);
-
+					data_port_out <= digits(0);					
+					sel_port_out <= "00000110";
 					if counter = counter_type'high then 
 						counter <= 0;
 						state <= DISPLAYING_DG_1;
@@ -52,9 +51,8 @@ begin
 					end if;
 
 				when DISPLAYING_DG_1 => 
-					sel_port_out <= "00000010";
 					data_port_out <= digits(1);
-
+					sel_port_out <= "00000101";
 					if counter = counter_type'high then 
 						counter <= 0;
 						state <= DISPLAYING_DG_2;
@@ -63,16 +61,15 @@ begin
 					end if;
 					
 				when DISPLAYING_DG_2 => 
-					sel_port_out <= "00000100";
 					data_port_out <= digits(2);
-
+					sel_port_out <= "00000011";
 					if counter = counter_type'high then 
 						counter <= 0;
 						state <= DISPLAYING_DG_0;
 					else
 						counter <= counter + 1;
 					end if;
-					
+
 				when others => 
 					state <= DISPLAYING_DG_0;
 			end case;
@@ -91,14 +88,6 @@ begin
 			if idx >= 0 and idx <= 2 then 
 				digits(idx) <= not segments_active_high; -- it should be active low on the wire
 			end if;
-
-			
--- 			case segment_select(1 downto 0) is 
--- 				when "00" =>  digits(0) <= not segments_active_high; -- it should be active low on the wire
--- 				when "01" =>  digits(1) <= not segments_active_high; 
--- 				when "10" =>  digits(2) <= not segments_active_high; 
--- 				when  others =>
--- 			end case;
 			
 		end if;		
 	end process;

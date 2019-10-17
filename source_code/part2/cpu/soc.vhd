@@ -169,14 +169,14 @@ architecture structural of soc is
 	signal out_port_7 : std_logic_vector (7 downto 0); -- pin header 8
 	signal out_port_8 : std_logic_vector (7 downto 0); -- pin header 9
 	
-	signal cnt : std_logic_vector(27 downto 0) := (others => '0');
+	-- signal cnt : std_logic_vector(27 downto 0) := (others => '0');
 	
 begin 
 
-	cnt <= cnt + 1 when rising_edge(clk);
+	--cnt <= cnt + 1 when rising_edge(clk);
 
 	c : cpu port map (
-			clk				=> cnt(18),
+			clk				=> clk,
 			reset			=> reset,
 			error			=> error,
 
@@ -194,7 +194,7 @@ begin
 	);
 	
 	p: pio port map (
-		clk					=> cnt(18),
+		clk					=> clk,
 		clk_unscaled		=> clk, 
 		rst					=> reset,
 		address 				=> pio_address,
@@ -217,7 +217,7 @@ begin
 	);
 	
 	m: memory port map (
-		clk					=> cnt(18),
+		clk					=> clk,
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
