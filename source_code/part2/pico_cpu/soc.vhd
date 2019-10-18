@@ -163,7 +163,7 @@ begin
 	in_port_1(1) <= not Switch_1;
 	in_port_1(0) <= not Switch_0;
 	
-	LED_7 <= error; 
+	LED_7 <= out_port_4(7); 
 	LED_6 <= out_port_4(6);
 	LED_5 <= out_port_4(5);
 	LED_4 <= out_port_4(4);

@@ -138,11 +138,10 @@ stim_proc:
    process   -- Stimulus process - main process that drives things 
    begin
 		reset <= '1';
-		-- hold reset state for 100 ns.
 		wait for 200 ns;	
 		reset <= '0';		
 		
-		wait for clk_period*400; -- offset our sampling point into the middle of the positive pulse 		
+		wait for clk_period*1000; 
 		
 		wait;
    end process;

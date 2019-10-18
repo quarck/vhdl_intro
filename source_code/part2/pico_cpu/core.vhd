@@ -49,8 +49,7 @@ begin
 	debug_instruction_code <=	instruction_code;
 	debug_cpu_state <= cpu_state;
 
-	process (clk, reset, program_counter, accumulator)		
-		
+	process (clk, reset, program_counter, accumulator)
 	begin
 		if reset = '1' 
 		then
@@ -81,11 +80,9 @@ begin
 					-- data from the FETCH_0 is still travelling through FF-s
 					address_bus <= program_counter;
 					program_counter <= program_counter + 1;
-
 					cpu_state <= DECODE;
 
 				when DECODE =>
-					-- instruction code would have just arrive by now in the data IN
 					instruction_code <= data_in;
 				
 					case data_in is
@@ -158,19 +155,15 @@ begin
 					data_out <= accumulator;	
 					mem_write <= '1';
 					cpu_state <= EXECUTE_STA_2;	
-
 				when EXECUTE_STA_2 =>
 					mem_write <= '0';
 					cpu_state <= FETCH_0;
 
-
 				when EXECUTE_LDA_1 =>
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_LDA_2;
-
 				when EXECUTE_LDA_2 =>
 					cpu_state <= EXECUTE_LDA_3;
-
 				when EXECUTE_LDA_3 =>
 					accumulator <= data_in;	
 					cpu_state <= FETCH_0;
@@ -179,14 +172,13 @@ begin
 					accumulator <= data_in;
 					cpu_state <= FETCH_0;
 
-
 				when EXECUTE_ALU_REGMEM_1 =>
 					address_bus <= data_in;
 					cpu_state <= EXECUTE_ALU_REGMEM_2;
-					
+
 				when EXECUTE_ALU_REGMEM_2 =>
 					cpu_state <= EXECUTE_ALU_REGMEM_3;
-					
+
 				when EXECUTE_ALU_REGMEM_3 =>
 					alu_left <= accumulator;
 					alu_right <= data_in;
