@@ -24,6 +24,11 @@ package opcodes is
 
 			ALU_NOP			-- no operation
 		);
+		
+	type alu_value_select is (
+		ALU_REGISTER_PORT, 
+		ALU_VALUE_PORT
+	);
 
 	-- constant definition for various CPU instructions 
 		

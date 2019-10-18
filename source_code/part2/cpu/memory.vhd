@@ -11,6 +11,7 @@ entity memory is
 		address_bus	: in std_logic_vector(7 downto 0);
 		data_write	: in std_logic_vector(7 downto 0);
 		data_read	: out std_logic_vector(7 downto 0);
+		mem_read	: in std_logic;
 		mem_write	: in std_logic;
 		rst			: in std_logic
 	);
@@ -116,11 +117,14 @@ begin
 	process (clk, rst, mem_write, address_bus, data_write)
 	begin
 
-		if rising_edge(clk) then
-			if mem_write = '1' then 
+		if rising_edge(clk) 
+		then
+			if mem_write = '1' 
+			then 
 				mem(to_integer(unsigned(address_bus))) <= data_write;
-				data_read <= data_write;
-			else 
+				data_read <= data_write;				
+			elsif mem_read = '1' 
+			then 			
 				data_read <= mem(to_integer(unsigned(address_bus)));
 			end if;			
 		end if;

@@ -95,6 +95,7 @@ architecture structural of soc is
 			mem_address			: out std_logic_vector(7 downto 0);
 			mem_data_r			: in std_logic_vector(7 downto 0);
 			mem_data_w			: out std_logic_vector(7 downto 0);
+			mem_read			: out std_logic;
 			mem_write			: out std_logic;
 		
 			pio_address 		: out std_logic_vector(7 downto 0);
@@ -113,6 +114,7 @@ architecture structural of soc is
 			address_bus	: in std_logic_vector(7 downto 0);
 			data_write	: in std_logic_vector(7 downto 0);
 			data_read	: out std_logic_vector(7 downto 0);
+			mem_read	: in std_logic;
 			mem_write	: in std_logic;
 			rst			: in std_logic
 		);
@@ -149,6 +151,7 @@ architecture structural of soc is
 	signal mem_address		: std_logic_vector(7 downto 0);
 	signal data_from_mem_to_cpu	: std_logic_vector(7 downto 0);
 	signal data_from_cpu_to_mem	: std_logic_vector(7 downto 0);
+	signal mem_read			: std_logic;
 	signal mem_write		: std_logic;
 
 	signal pio_address 		: std_logic_vector(7 downto 0);
@@ -183,6 +186,7 @@ begin
 			mem_address		=> mem_address,
 			mem_data_r		=> data_from_mem_to_cpu,
 			mem_data_w		=> data_from_cpu_to_mem,
+			mem_read		=> mem_read,
 			mem_write		=> mem_write,
 		
 			pio_address 	=> pio_address,
@@ -221,6 +225,7 @@ begin
 		address_bus			=> mem_address,
 		data_write			=> data_from_cpu_to_mem,
 		data_read			=> data_from_mem_to_cpu,
+		mem_read			=> mem_read,
 		mem_write			=> mem_write,
 		rst					=> reset
 	);

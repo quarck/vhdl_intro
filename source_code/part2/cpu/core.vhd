@@ -10,18 +10,21 @@ use work.types.all;
 entity core is
 	port
 	(
-		clk					: in std_logic;
+		clk				: in std_logic;
 		reset				: in std_logic;
 		error				: out std_logic;
 		
+		-- memory interface 
 		address_bus			: out std_logic_vector(7 downto 0);
 		data_in				: in std_logic_vector(7 downto 0);
-		data_out			: out std_logic_vector(7 downto 0);
+		data_out				: out std_logic_vector(7 downto 0);
+		mem_read				: out std_logic;
 		mem_write			: out std_logic;
 
+		-- alu control 
 		alu_opcode 			: out alu_opcode_type;
 		alu_carry_in		: out std_logic;		
-		alu_left			: out std_logic_vector(7 downto 0);
+		alu_left_select	: out std_logic_vector(7 downto 0);
 		alu_right			: out std_logic_vector(7 downto 0);
 		alu_result			: in std_logic_vector(7 downto 0);
 		alu_flags_in		: in ALU_flags;
@@ -74,6 +77,7 @@ begin
 			cpu_state <= FETCH_0;
 			program_counter <= "00000000";
 			mem_write <= '0';
+			mem_read <= '0';
 			address_bus <= "00000000";
 			data_out <= "00000000";	
 			alu_opcode <= ALU_NOP;
@@ -94,6 +98,7 @@ begin
 			clk_counter <= clk_counter + 1;
 
 			mem_write <= '0'; -- set it off by default unless we want it 
+			mem_read <= '0';
 			
 			case cpu_state is
 				when STOP => 
@@ -102,6 +107,7 @@ begin
 				when FETCH_0 =>
 					-- set instruction address on the memory bus
 					address_bus <= program_counter;
+					mem_read <= '1';
 					program_counter <= program_counter + 1;
 					cpu_state <= FETCH_1;
 					
@@ -109,6 +115,7 @@ begin
 					-- set instruction address on the memory bus, 
 					-- data from the FETCH_0 is still travelling through FF-s
 					address_bus <= program_counter;
+					mem_read <= '1';
 					program_counter <= program_counter + 1;
 
 					cpu_state <= DECODE;
@@ -368,7 +375,7 @@ begin
 					end case;
 
 				when EXECUTE_STA_1 =>
-					address_bus <= data_in;
+					address_bus <= data_in;					
 					data_out <= accumulator;	
 					mem_write <= '1';
 					cpu_state <= EXECUTE_STA_2;	-- go to FETCH_0 ?
@@ -379,6 +386,7 @@ begin
 
 				when EXECUTE_LDA_MEM_1 =>
 					address_bus <= data_in;
+					mem_read <= '1';
 					cpu_state <= EXECUTE_LDA_MEM_2;
 
 				when EXECUTE_LDA_MEM_2 =>
@@ -396,6 +404,7 @@ begin
 
 				when EXECUTE_ALU_REGMEM_1 =>
 					address_bus <= data_in;
+					mem_read <= '1';
 					cpu_state <= EXECUTE_ALU_REGMEM_2;
 					
 				when EXECUTE_ALU_REGMEM_2 =>
@@ -408,6 +417,7 @@ begin
 
 				when EXECUTE_ALU_REGMEM_INV_1 =>
 					address_bus <= data_in;
+					mem_read <= '1';
 					cpu_state <= EXECUTE_ALU_REGMEM_INV_2;
 					
 				when EXECUTE_ALU_REGMEM_INV_2 =>
@@ -473,6 +483,7 @@ begin
 					-- note: a tiny optimisation would be to do: 
 					-- 
 					--   address_bus <= program_counter;
+					--	 mem_read <= '1';
 					--   program_counter <= program_counter + 1;
 					--   cpu_state <= FETCH_1
 					--

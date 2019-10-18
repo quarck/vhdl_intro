@@ -13,7 +13,9 @@ entity cpu is
 		mem_address			: out std_logic_vector(7 downto 0);
 		mem_data_r			: in std_logic_vector(7 downto 0);
 		mem_data_w			: out std_logic_vector(7 downto 0);
+		mem_read			: out std_logic;
 		mem_write			: out std_logic;
+
 	
 		pio_address 		: out std_logic_vector(7 downto 0);
 		pio_data_w			: out std_logic_vector(7 downto 0); -- data entering IO port 
@@ -36,6 +38,7 @@ architecture structural of cpu is
 			address_bus			: out std_logic_vector(7 downto 0);
 			data_in				: in std_logic_vector(7 downto 0);
 			data_out			: out std_logic_vector(7 downto 0);
+			mem_read			: out std_logic;
 			mem_write			: out std_logic;
 	
 			alu_opcode 			: out alu_opcode_type;
@@ -90,6 +93,7 @@ begin
 			address_bus			=> mem_address,
 			data_in				=> mem_data_r,
 			data_out			=> mem_data_w,
+			mem_read			=> mem_read,
 			mem_write			=> mem_write,
 
 			alu_opcode 			=> alu_opcode,

@@ -19,6 +19,7 @@ architecture behavior of TB_core is
 			address_bus		: out std_logic_vector(7 downto 0);
 			data_in			: in std_logic_vector(7 downto 0);
 			data_out		: out std_logic_vector(7 downto 0);
+			mem_read		: out std_logic;
 			mem_write		: out std_logic;
 
 			alu_opcode 		: out alu_opcode_type;
@@ -47,12 +48,13 @@ architecture behavior of TB_core is
 	
 	component memory
 		port(
-         clk : IN  std_logic;
-         address_bus : IN  std_logic_vector(7 downto 0);
-         data_write : IN  std_logic_vector(7 downto 0);
-         data_read : OUT  std_logic_vector(7 downto 0);
-         mem_write : IN  std_logic;
-         rst : IN  std_logic
+         clk : in  std_logic;
+         address_bus : in  std_logic_vector(7 downto 0);
+         data_write : in  std_logic_vector(7 downto 0);
+         data_read : out  std_logic_vector(7 downto 0);
+		 mem_read : in std_logic;
+         mem_write : in  std_logic;
+         rst : in  std_logic
         );
    end component;
 	
@@ -143,6 +145,7 @@ begin
 		address_bus	=> address_bus,
 		data_in		=> data_in,
 		data_out	=> data_out,
+		mem_read	=> mem_read,
 		mem_write	=> mem_write,
 		alu_opcode 	=> alu_opcode,
 		alu_carry_in	=> alu_carry_in,
@@ -169,6 +172,7 @@ begin
 		address_bus => address_bus,
 		data_write => data_out,
 		data_read => data_in,
+		mem_read => mem_read,
 		mem_write => mem_write,
 		rst => reset
 	);
